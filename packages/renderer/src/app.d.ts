@@ -10,3 +10,7 @@ declare global {
 }
 
 export {};
+
+declare module 'jimp' {
+	export = Jimp.Jimp;
+}

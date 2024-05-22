@@ -1,28 +1,37 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-import {chrome} from '../../.electron-vendors.cache.json';
-import {renderer} from 'unplugin-auto-expose';
-import {join} from 'node:path';
-import {injectAppVersion} from '../../version/inject-app-version-plugin.mjs';
+import { chrome } from '../../.electron-vendors.cache.json';
+import { renderer } from 'unplugin-auto-expose';
+import { join } from 'node:path';
+import { injectAppVersion } from '../../version/inject-app-version-plugin.mjs';
+
+import commonjs from '@rollup/plugin-commonjs';
 
 const PACKAGE_ROOT = __dirname;
 
 export default defineConfig({
-  server: {
-    fs: {
-      // Allow serving files from one level up to the project root
-      allow: ['../../'],
-    },
-  },
-  build: {
-    sourcemap: true,
-    target: `chrome${chrome}`
-  },
-  plugins: [
-    sveltekit(),
-    renderer.vite({
-      preloadEntry: join(PACKAGE_ROOT, '../preload/src/index.ts'),
-    }),
-    injectAppVersion(),
-  ]
+	server: {
+		fs: {
+			// Allow serving files from one level up to the project root
+			allow: ['../../']
+		}
+	},
+	build: {
+		sourcemap: true,
+		target: `chrome${chrome}`
+	},
+	plugins: [
+		sveltekit(),
+		renderer.vite({
+			preloadEntry: join(PACKAGE_ROOT, '../preload/src/index.ts')
+		}),
+		injectAppVersion(),
+		commonjs({
+			dynamicRequireTargets: [
+				// include the files to be dynamically required here
+				'./node_modules/sharp/**/*'
+			],
+			ignoreDynamicRequires: false
+		})
+	]
 });

@@ -1,4 +1,4 @@
-import {app} from 'electron';
+import {app, ipcMain} from 'electron';
 import './security-restrictions';
 import {restoreOrCreateWindow} from '/@/mainWindow';
 import {platform} from 'node:process';
@@ -35,9 +35,38 @@ app.on('activate', restoreOrCreateWindow);
 /**
  * Create the application window when the background process is ready.
  */
+
+import {handleBulkUpdateMockups} from '../../handlers/bulk-update-mockups';
+import {handleMergeDxfFiles} from '../../handlers/merge-files';
+import {handleMergeAiFiles} from '../../handlers/merge-ai-files';
+import {handleProcessPsd} from '../../handlers/process-psd';
+import {handleProcessSvg} from '../../handlers/process-svg';
+import {handleDownloadSvg} from '../../handlers/download-svg';
+import {handleRequireLog} from '../../handlers/require-log';
+import {handleExportImage} from '../../handlers/export-image';
+import {handleSaveFont} from '../../handlers/save-font';
+import {handleUploadToServer} from '../../handlers/upload-to-server';
+import {handleGetTemplates, handleGetDetailTemplate} from '../../handlers/templates';
+import {handleMergeSVGAndPNG} from '../../handlers/merge-svg-and-png';
+
 app
   .whenReady()
-  .then(restoreOrCreateWindow)
+  .then(() => {
+    ipcMain.on('bulk-update-mockups', handleBulkUpdateMockups);
+    ipcMain.on('merge-files', handleMergeDxfFiles);
+    ipcMain.on('merge-ai-files', handleMergeAiFiles);
+    ipcMain.on('merge-svg-and-png', handleMergeSVGAndPNG);
+    ipcMain.on('process-psd', handleProcessPsd);
+    ipcMain.on('process-svg', handleProcessSvg);
+    ipcMain.on('download-svg', handleDownloadSvg);
+    ipcMain.on('upload-to-server', handleUploadToServer);
+    ipcMain.on('require-log', handleRequireLog);
+    ipcMain.on('export-image', handleExportImage);
+    ipcMain.on('save-font', handleSaveFont);
+    ipcMain.on('get-templates', handleGetTemplates);
+    ipcMain.on('get-detail-template', handleGetDetailTemplate);
+    restoreOrCreateWindow();
+  })
   .catch(e => console.error('Failed create window:', e));
 
 /**
