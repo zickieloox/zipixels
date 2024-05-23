@@ -1,5 +1,48 @@
-<script>
+<script lang="ts">
+  import type Konva from "konva";
+  export let stage: Konva.Stage;
+  export let konvaLayer: Konva.Layer;
   import { handleCustomFont } from "../../main2";
+  let orderListElement: HTMLElement;
+  let fileName = '';
+	let psdData: any = null;
+	let fileSize = 0;
+	let imageIds: string[] = [];
+	let unknownCount = 1;
+	let relateElements: { [key: string]: any } = {};
+	let defaultShowText = false;
+	let layerZIndexMap: any = {};
+	let sizeScale: any = {};
+	let currentScale = 1;
+	let copyLayer: { [key: string]: any } = {};
+	let copyElements: any[] = [];
+
+  const MIN_SCALE = 0.05;
+
+  export const resetContainer = (): void => {
+		imageIds.length = 0;
+		unknownCount = 1;
+		orderListElement.innerHTML = '';
+		psdData = null;
+		fileName = '';
+		fileSize = 0;
+		imageIds = [];
+		unknownCount = 1;
+		relateElements = {};
+		defaultShowText  = false;
+		layerZIndexMap = {};
+		sizeScale = {};
+		currentScale = 1;
+		copyLayer = {};
+		copyElements = [];
+
+		stage.scale({ x: MIN_SCALE, y: MIN_SCALE });
+		stage.position({ x: 0, y: 0 });
+
+		konvaLayer.destroyChildren();
+		konvaLayer.clear();
+	};
+
 </script>
 
 <div
@@ -12,7 +55,7 @@
 		<input id="custom-font" type="file" accept=".ttf" on:change={handleCustomFont}/>
 	</div>
 	<br />
-	<div class="overflow-auto" id="order-list" style="padding-bottom: 1rem; height: 90%;"></div>
+	<div class="overflow-auto" id="order-list" style="padding-bottom: 1rem; height: 90%;" bind:this={orderListElement}></div>
 
 	<div
 		id="progress-bar-container"

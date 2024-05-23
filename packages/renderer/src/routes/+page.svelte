@@ -7,9 +7,12 @@
 	import Toastify from 'toastify-js';
 	import { nanoid } from 'nanoid';
 	import Konva from 'konva';
-	import JsBarcode from 'jsbarcode';
 	import { onMount } from 'svelte';
 	import { createImageElementFromUrl, isInViewport } from '../utils';
+	import type { Text } from 'konva/lib/shapes/Text';
+	import type { TextPath } from 'konva/lib/shapes/TextPath';
+	import type { Path } from 'konva/lib/shapes/Path';
+	import type { LayerConfig } from 'konva/lib/Layer';
 
 	let canvasWrapperElement: HTMLDivElement | null = null;
 
@@ -44,8 +47,8 @@
 	let unknownCount = 1;
 	let relateElements: { [key: string]: any } = {};
 	let defaultShowText = false;
-	let layerZIndexMap = {};
-	let sizeScale: { [key: string]: number } = {};
+	let layerZIndexMap: any = {};
+	let sizeScale: any = {};
 	let currentScale = 1;
 	let copyLayer: { [key: string]: any } = {};
 	let copyElements: any[] = [];
@@ -133,7 +136,7 @@
 		});
 	};
 
-	//
+	//KonvaStage
 	let stage: Konva.Stage;
 	let tempStage: Konva.Stage;
 	let konvaLayer: Konva.Layer;
@@ -222,7 +225,7 @@
 		imageIds = [];
 		unknownCount = 1;
 		relateElements = {};
-		defaultShowText = false;
+		defaultShowText  = false;
 		layerZIndexMap = {};
 		sizeScale = {};
 		currentScale = 1;
@@ -262,12 +265,12 @@
 
 	//exportImage
 	const exportImage = (outputFileName = '', width = null, height = null) => {
-		const orderListElements = document.querySelectorAll(
+		const orderListElements: any = document.querySelectorAll(
 			'#order-list div ul li img[data-is-visible="1"]'
 		);
-		const textElements = document.querySelectorAll('#order-list div ul li input');
-		const exportImageObjects = [...copyElements];
-		orderListElements.forEach((elem) => {
+		const textElements = document.querySelectorAll<HTMLInputElement>('#order-list div ul li input');
+		const exportImageObjects: any[] = [...copyElements];
+		orderListElements.forEach((elem: any) => {
 			const obj = stage.findOne('#' + elem.alt);
 
 			if (obj) exportImageObjects.push(obj);
@@ -286,9 +289,9 @@
 		}
 
 		textElements.forEach((elem) => {
-			const obj = stage.findOne('#' + elem!.parentElement!.id);
-			if (obj.textWidth > 0) {
-				exportImageObjects.push(obj);
+			const textLayer: Text | undefined = stage.findOne('#' + elem!.parentElement!.id);
+			if (textLayer && textLayer.textWidth > 0) {
+				exportImageObjects.push(textLayer);
 			}
 		});
 
@@ -374,9 +377,10 @@
 	};
 
 	//handleMergeSVGFilesInput
-	const handleMergeSVGFilesInput = async (e: Event) => {
-		const files = e.target!.files;
-		if (files.length === 0) return;
+	const handleMergeSVGFilesInput = async (e: Event): Promise<void> => {
+    const target = e.target as HTMLInputElement;
+		const files = target.files;
+		if (files!.length === 0) return;
 
 		Notiflix.Confirm.prompt(
 			'Size of export image',
@@ -386,8 +390,8 @@
 			'Cancel',
 			(widthAndHeight) => {
 				const filePaths = [];
-				for (let i = 0; i < files.length; i++) {
-					filePaths.push(files[i].path);
+				for (let i = 0; i < files!.length; i++) {
+					filePaths.push(files![i].path);
 				}
 
 				const [width, height] = widthAndHeight.replace(' ', '').split('x');
@@ -570,7 +574,7 @@
 		label = null,
 		maxLength = 0
 	) => {
-		const konvaLayer = stage.findOne('#' + imageId);
+		const konvaLayer: Text | undefined = stage.findOne('#' + imageId);
 
 		if (!konvaLayer) return;
 
@@ -584,7 +588,7 @@
 		const desiredWidth = konvaLayer.width();
 		let currentFontSize = standardSize;
 
-		konvaLayer.width(null);
+		konvaLayer.width(0);
 		konvaLayer.fontSize(standardSize);
 		konvaLayer.text(inputText);
 
@@ -698,13 +702,15 @@
 		if (sizeScale[imageId]) {
 			currentScale = sizeScale[imageId] || 1;
 		}
+    const parentElement = elem.parentElement?.parentElement;
+    if (!parentElement) return;
 
 		// Turn off same level image
-		elem.parentElement.parentElement.querySelectorAll(`li img`).forEach((img) => {
+		parentElement.querySelectorAll<HTMLImageElement>(`li img`).forEach((img) => {
 			img.classList.remove(`border-amber-600`);
 			img.classList.add('border-transparent');
 			img.dataset.isVisible = '0';
-			const sameLevelKonvaImage = stage.findOne('#' + img.parentElement.id);
+			const sameLevelKonvaImage = stage.findOne('#' + img?.parentElement?.id);
 			sameLevelKonvaImage?.hide();
 		});
 
@@ -751,11 +757,13 @@
 			}
 		}
 
-		const relatedImageIds = [];
-		if (relateElements[elem.dataset.name]) {
-			const relatedIds = relateElements[elem.dataset.name] || [];
-			relatedImageIds.push(...relatedIds);
-		}
+		const relatedImageIds: string[] = [];
+
+    const elemDatasetName = elem.dataset.name;
+    if (elemDatasetName && relateElements[elemDatasetName]) {
+      const relatedIds = relateElements[elemDatasetName] || [];
+      relatedImageIds.push(...relatedIds);
+    }
 
 		if (relatedElementName) {
 			const relatedIds = relateElements[relatedElementName] || [];
@@ -765,7 +773,7 @@
 		const uniqueRelatedImageIds = [...new Set(relatedImageIds)];
 		if (uniqueRelatedImageIds.length > 0) {
 			uniqueRelatedImageIds.forEach((id) => {
-				const relatedImage = document.querySelector(`img[alt=${id}]`);
+				const relatedImage: HTMLElement | null = document.querySelector(`img[alt=${id}]`);
 				toggleVisibility(relatedImage, false);
 			});
 		}
@@ -776,48 +784,54 @@
 		}
 	};
 
-	const triggerCopyLayer = () => {
-		if (!copyLayer || !copyLayer.x) return;
+const triggerCopyLayer = () => {
+  if (!copyLayer || !copyLayer.x) return;
 
-		const orderListElements = document.querySelectorAll(
-			'#order-list div ul li img[data-is-visible="1"]'
-		);
-		const textElements = document.querySelectorAll('#order-list div ul li input');
-		const copyImageObjects: any[] = [];
-		orderListElements.forEach((elem) => {
-			const obj = stage.findOne('#' + elem.alt);
+  const orderListElements = document.querySelectorAll<HTMLImageElement>(
+    '#order-list div ul li img[data-is-visible="1"]'
+  );
+  const textElements = document.querySelectorAll<HTMLInputElement>(
+    '#order-list div ul li input'
+  );
 
-			if (obj && !elem.dataset.groupName.toLowerCase().includes('background'))
-				copyImageObjects.push(obj);
-		});
+  const copyImageObjects: Konva.Node[] = [];
 
-		if (copyImageObjects.length === 0) {
-			return;
-		}
+  orderListElements.forEach((elem) => {
+    const obj = stage.findOne<Konva.Image>('#' + elem.alt);
 
-		textElements.forEach((elem) => {
-			const obj = stage.findOne('#' + elem.parentElement.id);
-			if (obj.textWidth > 0) {
-				copyImageObjects.push(obj);
-			}
-		});
+    if (obj && !elem.dataset.groupName?.toLowerCase().includes('background')) {
+      copyImageObjects.push(obj);
+    }
+  });
 
-		copyElements.map((copyElem) => {
-			copyElem.destroy();
-		});
+  if (copyImageObjects.length === 0) {
+    return;
+  }
 
-		copyElements = [];
-		copyImageObjects.map((elem) => {
-			const copyElem = elem.clone();
-			copyElem.setAttrs({
-				x: copyElem.attrs.x + copyLayer.x,
-				y: copyElem.attrs.y + copyLayer.y,
-				baseElementId: elem.id()
-			});
-			copyElements.push(copyElem);
-			konvaLayer.add(copyElem);
-		});
-	};
+  textElements.forEach((elem) => {
+    const textLayer = stage.findOne<Konva.Text>('#' + elem.parentElement!.id);
+    if (textLayer && textLayer.textWidth > 0) {
+      copyImageObjects.push(textLayer);
+    }
+  });
+
+  copyElements.forEach((copyElem) => {
+    copyElem.destroy();
+  });
+
+  copyElements = [];
+
+  copyImageObjects.forEach((elem) => {
+    const copyElem = elem.clone();
+    copyElem.setAttrs({
+      x: copyElem.attrs.x + copyLayer.x,
+      y: copyElem.attrs.y + copyLayer.y,
+      baseElementId: elem.id()
+    });
+    copyElements.push(copyElem);
+    konvaLayer.add(copyElem);
+  });
+};
 
 	const resetLayerIndexes = () => {
 		const zIndexes = Object.keys(layerZIndexMap).sort((a, b) => {
@@ -843,26 +857,30 @@
 		});
 	};
 
-	const setFontFromArrayBuffer = (fontData: ArrayBuffer, fontName: string): void => {
-		const font = new FontFace(fontName, fontData);
+const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string): void => {
+  const font = new FontFace(fontName, fontData);
 
-		const inputs = document.querySelectorAll('li input');
-		// Load the font
-		font
-			.load()
-			.then(function (loadedFont) {
-				const fontFaceSet = document.fonts;
-				fontFaceSet.add(loadedFont);
+  const inputs = document.querySelectorAll<HTMLInputElement>('li input');
 
-				for (const input of Array.from(inputs)) {
-					const text = stage.findOne('#' + input.attributes.for.value);
-					text.fontFamily(fontName);
-				}
-			})
-			.catch(function (error) {
-				console.error('Font loading failed: ', error);
-			});
-	};
+  font.load()
+    .then(function (loadedFont) {
+      const fontFaceSet = document.fonts;
+      fontFaceSet.add(loadedFont);
+
+      for (const input of Array.from(inputs)) {
+        const inputForAttribute = input.getAttribute('for');
+        if (inputForAttribute) {
+          const text = stage.findOne<Konva.Text>('#' + inputForAttribute);
+          if (text) {
+            text.fontFamily(fontName);
+          }
+        }
+      }
+    })
+    .catch(function (error) {
+      console.error('Font loading failed: ', error);
+    });
+};
 
 	const initSelectList = () => {
 		const chooseElements = document.querySelectorAll('#order-list div > ul');
@@ -873,7 +891,7 @@
 			}
 
 			if (elem.childElementCount > 0) {
-				toggleVisibility(elem.childNodes[0]?.firstChild);
+				toggleVisibility(elem.childNodes[0]?.firstChild as HTMLElement);
 			}
 		});
 	};
@@ -898,7 +916,7 @@
 		stage.scale({ x: scale, y: scale });
 	};
 
-	const createKonvaText = async (layer, imageId, groupName, defaultShowText, hashtagPart) => {
+	const createKonvaText = async (layer: any, imageId: string, groupName: string, defaultShowText: boolean, hashtagPart: boolean | string) => {
 		const fontName = layer.text_data.font_name
 			.replaceAll("'", '')
 			.split('-')[0]
@@ -924,7 +942,7 @@
 		const konvaText = new Konva.Text({
 			x: layer.x + justifyX,
 			y: layer.y + justifyY,
-			text: defaultShowText ? layer.text_data.text.replaceAll('.', '') : '',
+			text: defaultShowText  ? layer.text_data.text.replaceAll('.', '') : '',
 			stroke: layer.text_data.stroke_color,
 			strokeWidth: layer.text_data.stroke_width,
 			name: layer.name,
@@ -960,7 +978,7 @@
 		}
 	};
 
-	const createKonvaTextPath = async (layer, imageId, groupName, defaultShowText, hashtagPart) => {
+	const createKonvaTextPath = async (layer: LayerConfig, imageId: string, groupName: string, defaultShowText: boolean, hashtagPart: boolean  | string) => {
 		const fontName = layer.text_data.font_name
 			.replaceAll("'", '')
 			.split('-')[0]
@@ -996,7 +1014,7 @@
 		});
 
 		if (layer.rotate) {
-			konvaText.rotate(layer.rotate);
+			konvaTextPath.rotate(layer.rotate);
 		}
 
 		initTextPathFontSize.push(layer.text_data.font_size);
@@ -1014,10 +1032,10 @@
 		}
 	};
 
-	const createKonvaLayer = async (layer: any, zip, files, imageId, groupName, hashtagPart) => {
-		const imageUrl = await getImageUrl(layer, zip, files);
+	const createKonvaLayer = async (layer: any, zip: any, files: FileList | any, imageId: string, groupName: string, hashtagPart: boolean | string) => {
+		const imageUrl: any = await getImageUrl(layer, zip, files);
 
-		const imageElement = await createImageElementFromUrl(imageUrl);
+		const imageElement: any = await createImageElementFromUrl(imageUrl);
 
 		const konvaImage = new Konva.Image({
 			x: layer.x, // + (layer.translateX || 0),
@@ -1046,7 +1064,8 @@
 
 		if (layer.name.startsWith('#')) {
 			konvaImage.addEventListener('click', async () => {
-				document.querySelector('#' + imageId).click();
+        //@ts-ignore
+				document.querySelector('#' + imageId)!.click();
 			});
 		}
 
@@ -1059,9 +1078,9 @@
 		}
 	};
 
-	const createCopyLayer = async (layer) => {
-		const base = layer.children.find((child) => child.name.toLowerCase().includes('base'));
-		const copy = layer.children.find((child) => child.name.toLowerCase().includes('copy'));
+	const createCopyLayer = async (layer: LayerConfig) => {
+		const base = layer.children.find((child: any) => child.name.toLowerCase().includes('base'));
+		const copy = layer.children.find((child: any) => child.name.toLowerCase().includes('copy'));
 
 		copyLayer = {
 			...copyLayer,
@@ -1086,13 +1105,13 @@
 	}
 	const createLayer = async (
 		layer: Layer,
-		parentElement: HTMLElement | null,
-		level: number,
+		parentElement: any,
+		level: number | undefined,
 		zip: any,
-		files: File[],
+		files: File,
 		layerOption = '',
 		groupName = '',
-		processingLayer = []
+		processingLayer: Promise<void>[] = []
 	) => {
 		if (!layer || layer.name.toLowerCase().includes('frame')) return;
 		if (layer.name.toLowerCase().includes('copy')) {
@@ -1131,7 +1150,7 @@
 			parentElement.appendChild(toggleWrapper);
 			toggleElement.id = imageId;
 			toggleWrapper.setAttribute('class', 'w-full my-2');
-			toggleElement.style = `padding-left: ${level * 30 || 8}px`;
+			toggleElement.setAttribute('style', `padding-left: ${level * 30 || 8}px`);
 			toggleElement.setAttribute(
 				'class',
 				'flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100'
@@ -1212,7 +1231,7 @@
 				if (layer.kind === 'type' && layer.text_data) {
 					liClasses.push('hidden');
 				} else {
-					newParentElement.parentElement.style.display = 'none';
+					newParentElement.parentElement!.style.display = 'none';
 				}
 			}
 
@@ -1230,14 +1249,14 @@
 				liElement.setAttribute('class', liClasses.join(' '));
 				liElement.innerHTML =
 					`<label for="${imageId}" data-is-visible="0" class="w-full block mb-2 text-md font-md text-black ml-4">
-        ${layer.name.replaceAll('.', '')}</label>` + // (${defaultShowText ? layer.name.length : 0}|${layer.text_data.text.length})
+        ${layer.name.replaceAll('.', '')}</label>` + // (${:  ? layer.name.length : 0}|${layer.text_data.text.length})
 					`<input for="${imageId}" value="${
 						defaultShowText ? layer.text_data.text.replaceAll('.', '') : ''
 					}" type="text" class="h-[40px] w-[90%] border-1 border-black-300 rounded ml-4 p-2 mr-4"  placeholder="${
 						layer.name
 					}" maxlength="12"></input>`;
 				liElement.addEventListener('input', (event) => {
-					const label = document.querySelector(`label[for="${imageId}"]`);
+					const label: any = document.querySelector(`label[for="${imageId}"]`);
 					handleHtmlLayerInputChange(
 						imageId,
 						// @ts-ignore
@@ -1262,23 +1281,28 @@
 				liElement.setAttribute('class', liClasses.join(' '));
 				liElement.innerHTML =
 					`<label for="${imageId}" data-is-visible="0" class="w-full block mb-2 text-md font-md text-black ml-4">
-        ${layer.name.replaceAll('.', '')}</label>` + // (${defaultShowText ? layer.name.length : 0}|${layer.text_data.text.length})
+        ${layer.name.replaceAll('.', '')}</label>` + // (${:  ? layer.name.length : 0}|${layer.text_data.text.length})
 					`<input for="${imageId}" value="${
 						defaultShowText ? layer.text_data.text.replaceAll('.', '') : ''
 					}" type="text" class="h-[40px] w-[90%] border-1 border-black-300 rounded ml-4 p-2 mr-4"  placeholder="${
 						layer.name
 					}" maxlength="12"</input>`;
 
-				liElement.addEventListener('input', (e) => {
-					const textpath = stage.findOne('#' + imageId);
+				liElement.addEventListener('input', (e ) => {
+					const textpath: TextPath | undefined = stage.findOne('#' + imageId);
+
+					if (!textpath) {
+						return;
+					}
+
 					const maxFontSize = initTextPathFontSize[textPathnum];
 					const minFontSize = maxFontSize / 2;
 					const overflowText = 1.95;
 
-					textpath.text(e.target.value);
-					const textLength = textpath?.getText().length;
-					let fontSize = parseInt(textpath.getFontSize());
-					const pathLength = stage.findOne('#' + imageId + 'path').getLength();
+					textpath.text((e.target as HTMLInputElement)?.value);
+					const textLength = textpath?.text().length;
+					let fontSize = textpath.fontSize();
+					const pathLength = (stage.findOne('#' + imageId + 'path') as Path).getLength();
 
 					while (textLength * fontSize > pathLength * overflowText && fontSize > minFontSize) {
 						fontSize = fontSize - 1;
@@ -1330,7 +1354,7 @@
 		return true;
 	};
 
-	const processZip = async (psdData, zip, files, layerOption = '') => {
+	const processZip = async (psdData: any, zip: any, files: File, layerOption = '') => {
 		if (!validatePsd(psdData)) {
 			alert("Can't nested #");
 
@@ -1358,7 +1382,7 @@
 		await Promise.all(processingLayer);
 		resetLayerIndexes();
 
-		document.querySelectorAll('.toggle-visibility').forEach((elem) => {
+		document.querySelectorAll<HTMLElement>('.toggle-visibility').forEach((elem) => {
 			elem.addEventListener('click', async function (event) {
 				event.stopPropagation();
 				toggleVisibility(elem);
@@ -1376,15 +1400,18 @@
 				Notiflix.Loading.standard('<span id="processed-layers">Processing</span>');
 
 				resetContainer();
-				await processZip(psdData, zip, files, elem.getAttribute('for'));
-				Notiflix.Loading.remove();
+        const forAttribute = elem.getAttribute('for');
+        if (forAttribute) {
+          await processZip(psdData, zip, files, forAttribute);
+        }
+        Notiflix.Loading.remove();
 			});
 		});
 
 		initScaleValue();
 		initSelectList();
 		initScreen(psdData.width, psdData.height);
-		exportImage(null, psdData.width, psdData.height);
+		exportImage('0', psdData.width, psdData.height);
 		Notiflix.Loading.remove();
 
 		if (psdData.missing_fonts) {
@@ -1429,6 +1456,7 @@
 		if (value.success) {
 			const template = value.data;
 			psdData = template.psdData;
+      		//@ts-ignore
 			await processZip(template.psdData);
 			Notiflix.Loading.remove();
 		} else {
@@ -1443,6 +1471,7 @@
 
 		if (value.success) {
 			if (value.data) {
+        		//@ts-ignore
 				await processZip(value.data);
 			} else {
 				Toastify({
@@ -1463,11 +1492,12 @@
 	});
 
 	//@ts-ignore
-	window.electronAPI.onProcessing((data) => {
-		if (document.querySelector('#processed-layers')) {
-			document.querySelector('#processed-layers').innerHTML = data.data;
-		}
-	});
+	window.electronAPI.onProcessing((data: { data: string }) => {
+    const processedLayersElement = document.querySelector<HTMLElement>('#processed-layers');
+    if (processedLayersElement) {
+    processedLayersElement.innerHTML = data.data;
+  }
+  });
 
 	window.addEventListener('DOMContentLoaded', async () => {
 		//@ts-ignore
@@ -1504,8 +1534,9 @@
 		<div id="container" />
 		<div id="temp-container" class="hidden" />
 	</div>
-	<!-- <Sidebar />
-	<Buttons /> -->
+
+	<!-- <Sidebar /> -->
+	<!-- <Buttons /> -->
 
 	<div
 		class="w-[25%] h-[100vh] bg-yellow-50 relative"

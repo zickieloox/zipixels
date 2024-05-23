@@ -402,7 +402,7 @@ const extractSvg = async (filePath, outputFolder) => {
   canvas.svg(optimizedSvgString);
   const layers = [];
   const style = document.querySelector('style');
-  const viewBox = document.querySelector('svg').childNodes[0].getAttribute('viewBox');
+  const viewBox = document.querySelector('svg')?.childNodes[0].getAttribute('viewBox');
   let styleObj =
     style && style.childNodes[0] ? convertStringCssToObject(style.childNodes[0].data) : null;
   const groups = document.querySelectorAll('g');

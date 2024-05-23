@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as FormData from 'form-data';
 import axios from 'axios';
 
-async function handleBulkUpdateMockups(event: any, filePath: string): Promise<void> {
+async function handleBulkUpdateMockups(event, filePath: string): Promise<void> {
   console.log('=== Received file path in main process for BulkUpdateMockups:', filePath);
 
   const currentDirectory = process.cwd();
@@ -64,19 +64,25 @@ async function handleBulkUpdateMockups(event: any, filePath: string): Promise<vo
   });
 }
 
-function flattenItems(psd: any): any[] {
+interface Layer {
+  name: string;
+  image_path?: string;
+  children?: Layer[];
+}
+
+function flattenItems(psd: {layers: Layer[]}): Layer[] {
   if (!psd) {
     return [];
   }
 
-  let flattenedItems: any[] = [];
-  psd.layers.forEach((layer: any) => {
+  let flattenedItems: Layer[] = [];
+  psd.layers.forEach(layer => {
     flattenedItems.push(layer);
     if (layer.children) {
       flattenedItems.push(...layer.children);
     }
   });
-  flattenedItems = flattenedItems.filter((item: any) => item.name[0] === '#' && item.image_path);
+  flattenedItems = flattenedItems.filter(item => item.name[0] === '#' && item.image_path);
   return flattenedItems;
 }
 
