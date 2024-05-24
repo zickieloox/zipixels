@@ -1,5 +1,65 @@
 	<script lang="ts">
+    import 'notiflix/dist/notiflix-3.2.6.min.css';
+	  import Notiflix from 'notiflix';
+	  import Toastify from 'toastify-js';
+
     import { handleFileInput, handleExportImage, handleMergeSVGFilesInput, handleReset, handleUploadServer, handleDownloadSvg, handleZoomInput, handleTemplatesChange} from '../../main2';
+
+    export let uploadPSDInput: HTMLElement;
+
+    export const processZip = async (psdData: any, zip: any, files: File, layerOption = '') => {}
+
+    //@ts-ignore
+	window.electronAPI.onProcessPsdDone(async (value: any) => {
+		//@ts-ignore
+		uploadPSDInput.value = '';
+
+		if (value.success) {
+			if (value.data) {
+				//@ts-ignore
+				await processZip(value.data);
+			} else {
+				Toastify({
+					text: value.message,
+					duration: 10000,
+					position: 'right',
+					style: {
+						background: 'linear-gradient(to right, #11998e, #38ef7d)'
+					}
+				}).showToast();
+			}
+
+			Notiflix.Loading.remove();
+		} else {
+			alert('Error: ' + value.message);
+			Notiflix.Loading.remove();
+		}
+	});
+
+  let fileName = '';
+	let fileSize = 0;
+
+  async function handleUploadPSDInput(event: Event): Promise<void> {
+		const input = event.target as HTMLInputElement;
+		const file = input.files?.[0];
+		//@ts-ignore
+		uploadPSDInput.value = null;
+
+		Notiflix.Loading.standard('<span id="processed-layers">0</span> layers processed');
+
+		if (file) {
+			fileName = file.path;
+			fileSize = file.size;
+
+			if (file.path.endsWith('.psd')) {
+				//@ts-ignore
+				await window.electronAPI.processPsd(file.path);
+			} else if (file.path.endsWith('.svg')) {
+				//@ts-ignore
+				await window.electronAPI.processSvg(file.path);
+			}
+		}
+	}
   </script>
 
   <input
@@ -17,7 +77,7 @@
 		class="fixed cursor-pointer top-4 left-4 border border-gray-300 p-2 bg-white rounded-md"
 		>Upload PSD file</label
 	>
-	<input type="file" id="upload-psd-input" class="hidden" accept=".psd, .svg" on:input={handleFileInput}/>
+	<input type="file" id="upload-psd-input" class="hidden" accept=".psd, .svg" on:input={handleUploadPSDInput} bind:this={uploadPSDInput}/>
 
 	<button
 		id="reset-btn"

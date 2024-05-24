@@ -13,6 +13,7 @@
 	import type { TextPath } from 'konva/lib/shapes/TextPath';
 	import type { Path } from 'konva/lib/shapes/Path';
 	import type { LayerConfig } from 'konva/lib/Layer';
+	import Canvas from './components/Canvas.svelte';
 
 	let canvasWrapperElement: HTMLDivElement | null = null;
 
@@ -62,78 +63,78 @@
 	let initTextPathFontSize: number[] = [];
 	let textPathnum = -1;
 
-	let checkFontCanvas: HTMLCanvasElement;
-	let checkFontContext;
-	onMount(() => {
-		checkFontContext = checkFontCanvas.getContext('2d');
-	});
-	const arialSVG = encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
-  <foreignObject width="100%" height="100%">
-    <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
-      <span style="font-family:Arial;">The brown fox jumps over a fence</span>
-    </div>
-  </foreignObject>
-</svg>
-`);
-	const img = new Image();
+// 	let checkFontCanvas: HTMLCanvasElement;
+// 	let checkFontContext;
+// 	onMount(() => {
+// 		checkFontContext = checkFontCanvas.getContext('2d');
+// 	});
+// 	const arialSVG = encodeURIComponent(`
+// <svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
+//   <foreignObject width="100%" height="100%">
+//     <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
+//       <span style="font-family:Arial;">The brown fox jumps over a fence</span>
+//     </div>
+//   </foreignObject>
+// </svg>
+// `);
+// 	const img = new Image();
 
-	img.src = 'data:image/svg+xml,' + arialSVG;
+// 	img.src = 'data:image/svg+xml,' + arialSVG;
 
-	let arialBmp;
+// 	let arialBmp;
 
-	setTimeout(() => {
-		checkFontContext!.drawImage(img, 0, 0);
-		arialBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
-		checkFontContext!.clearRect(0, 0, checkFontCanvas.width, checkFontCanvas.height);
-	}, 0);
+// 	setTimeout(() => {
+// 		checkFontContext!.drawImage(img, 0, 0);
+// 		arialBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
+// 		checkFontContext!.clearRect(0, 0, checkFontCanvas.width, checkFontCanvas.height);
+// 	}, 0);
 
 	const checkFontInstalled = (font: any) => {
-		const fontToTest = font.replaceAll('"', '');
-		if (fontToTest.toLowerCase().includes('arial')) {
-			return Promise.resolve(true);
-		}
+	// 	const fontToTest = font.replaceAll('"', '');
+	// 	if (fontToTest.toLowerCase().includes('arial')) {
+	// 		return Promise.resolve(true);
+	// 	}
 
-		const fontSVG = encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
-      <foreignObject width="100%" height="100%">
-        <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
-          <span style="font-family: ${fontToTest}, Arial;">The brown fox jumps over a fence</span>
-        </div>
-      </foreignObject>
-    </svg>
-  `);
+	// 	const fontSVG = encodeURIComponent(`
+  //   <svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
+  //     <foreignObject width="100%" height="100%">
+  //       <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
+  //         <span style="font-family: ${fontToTest}, Arial;">The brown fox jumps over a fence</span>
+  //       </div>
+  //     </foreignObject>
+  //   </svg>
+  // `);
 
-		const img = new Image();
-		img.src = 'data:image/svg+xml,' + fontSVG;
+	// 	const img = new Image();
+	// 	img.src = 'data:image/svg+xml,' + fontSVG;
 
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				checkFontContext!.drawImage(img, 0, 0);
+	// 	return new Promise((resolve) => {
+	// 		setTimeout(() => {
+	// 			checkFontContext!.drawImage(img, 0, 0);
 
-				const fontBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
+	// 			const fontBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
 
-				let isAllZero = true;
-				for (let i = 0; i < fontBmp.length; i++) {
-					if (fontBmp[i] !== 0) {
-						isAllZero = false;
-						break;
-					}
-				}
+	// 			let isAllZero = true;
+	// 			for (let i = 0; i < fontBmp.length; i++) {
+	// 				if (fontBmp[i] !== 0) {
+	// 					isAllZero = false;
+	// 					break;
+	// 				}
+	// 			}
 
-				if (isAllZero) {
-					resolve(false);
-				}
+	// 			if (isAllZero) {
+	// 				resolve(false);
+	// 			}
 
-				for (let i = 0; i < arialBmp.length; i++) {
-					if (arialBmp![i] !== fontBmp[i]) {
-						resolve(true);
-					}
-				}
+	// 			for (let i = 0; i < arialBmp.length; i++) {
+	// 				if (arialBmp![i] !== fontBmp[i]) {
+	// 					resolve(true);
+	// 				}
+	// 			}
 
-				resolve(false);
-			}, 0);
-		});
+	// 			resolve(false);
+	// 		}, 0);
+	// 	});
 	};
 
 	//KonvaStage
@@ -214,27 +215,27 @@
 
 	onMount(drawKonva);
 
+  let orderListContent = '';
 	//
 	const resetContainer = (): void => {
 		imageIds.length = 0;
 		unknownCount = 1;
-		orderListElement.innerHTML = '';
+		// orderListElement.innerHTML = '';
+    orderListContent = '';
 		psdData = null;
 		fileName = '';
 		fileSize = 0;
 		imageIds = [];
 		unknownCount = 1;
 		relateElements = {};
-		defaultShowText  = false;
+		defaultShowText = false;
 		layerZIndexMap = {};
 		sizeScale = {};
 		currentScale = 1;
 		copyLayer = {};
 		copyElements = [];
-
 		stage.scale({ x: MIN_SCALE, y: MIN_SCALE });
 		stage.position({ x: 0, y: 0 });
-
 		konvaLayer.destroyChildren();
 		konvaLayer.clear();
 	};
@@ -378,7 +379,7 @@
 
 	//handleMergeSVGFilesInput
 	const handleMergeSVGFilesInput = async (e: Event): Promise<void> => {
-    const target = e.target as HTMLInputElement;
+		const target = e.target as HTMLInputElement;
 		const files = target.files;
 		if (files!.length === 0) return;
 
@@ -702,8 +703,8 @@
 		if (sizeScale[imageId]) {
 			currentScale = sizeScale[imageId] || 1;
 		}
-    const parentElement = elem.parentElement?.parentElement;
-    if (!parentElement) return;
+		const parentElement = elem.parentElement?.parentElement;
+		if (!parentElement) return;
 
 		// Turn off same level image
 		parentElement.querySelectorAll<HTMLImageElement>(`li img`).forEach((img) => {
@@ -759,11 +760,11 @@
 
 		const relatedImageIds: string[] = [];
 
-    const elemDatasetName = elem.dataset.name;
-    if (elemDatasetName && relateElements[elemDatasetName]) {
-      const relatedIds = relateElements[elemDatasetName] || [];
-      relatedImageIds.push(...relatedIds);
-    }
+		const elemDatasetName = elem.dataset.name;
+		if (elemDatasetName && relateElements[elemDatasetName]) {
+			const relatedIds = relateElements[elemDatasetName] || [];
+			relatedImageIds.push(...relatedIds);
+		}
 
 		if (relatedElementName) {
 			const relatedIds = relateElements[relatedElementName] || [];
@@ -784,54 +785,52 @@
 		}
 	};
 
-const triggerCopyLayer = () => {
-  if (!copyLayer || !copyLayer.x) return;
+	const triggerCopyLayer = () => {
+		if (!copyLayer || !copyLayer.x) return;
 
-  const orderListElements = document.querySelectorAll<HTMLImageElement>(
-    '#order-list div ul li img[data-is-visible="1"]'
-  );
-  const textElements = document.querySelectorAll<HTMLInputElement>(
-    '#order-list div ul li input'
-  );
+		const orderListElements = document.querySelectorAll<HTMLImageElement>(
+			'#order-list div ul li img[data-is-visible="1"]'
+		);
+		const textElements = document.querySelectorAll<HTMLInputElement>('#order-list div ul li input');
 
-  const copyImageObjects: Konva.Node[] = [];
+		const copyImageObjects: Konva.Node[] = [];
 
-  orderListElements.forEach((elem) => {
-    const obj = stage.findOne<Konva.Image>('#' + elem.alt);
+		orderListElements.forEach((elem) => {
+			const obj = stage.findOne<Konva.Image>('#' + elem.alt);
 
-    if (obj && !elem.dataset.groupName?.toLowerCase().includes('background')) {
-      copyImageObjects.push(obj);
-    }
-  });
+			if (obj && !elem.dataset.groupName?.toLowerCase().includes('background')) {
+				copyImageObjects.push(obj);
+			}
+		});
 
-  if (copyImageObjects.length === 0) {
-    return;
-  }
+		if (copyImageObjects.length === 0) {
+			return;
+		}
 
-  textElements.forEach((elem) => {
-    const textLayer = stage.findOne<Konva.Text>('#' + elem.parentElement!.id);
-    if (textLayer && textLayer.textWidth > 0) {
-      copyImageObjects.push(textLayer);
-    }
-  });
+		textElements.forEach((elem) => {
+			const textLayer = stage.findOne<Konva.Text>('#' + elem.parentElement!.id);
+			if (textLayer && textLayer.textWidth > 0) {
+				copyImageObjects.push(textLayer);
+			}
+		});
 
-  copyElements.forEach((copyElem) => {
-    copyElem.destroy();
-  });
+		copyElements.forEach((copyElem) => {
+			copyElem.destroy();
+		});
 
-  copyElements = [];
+		copyElements = [];
 
-  copyImageObjects.forEach((elem) => {
-    const copyElem = elem.clone();
-    copyElem.setAttrs({
-      x: copyElem.attrs.x + copyLayer.x,
-      y: copyElem.attrs.y + copyLayer.y,
-      baseElementId: elem.id()
-    });
-    copyElements.push(copyElem);
-    konvaLayer.add(copyElem);
-  });
-};
+		copyImageObjects.forEach((elem) => {
+			const copyElem = elem.clone();
+			copyElem.setAttrs({
+				x: copyElem.attrs.x + copyLayer.x,
+				y: copyElem.attrs.y + copyLayer.y,
+				baseElementId: elem.id()
+			});
+			copyElements.push(copyElem);
+			konvaLayer.add(copyElem);
+		});
+	};
 
 	const resetLayerIndexes = () => {
 		const zIndexes = Object.keys(layerZIndexMap).sort((a, b) => {
@@ -857,30 +856,31 @@ const triggerCopyLayer = () => {
 		});
 	};
 
-const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string): void => {
-  const font = new FontFace(fontName, fontData);
+	const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string): void => {
+		const font = new FontFace(fontName, fontData);
 
-  const inputs = document.querySelectorAll<HTMLInputElement>('li input');
+		const inputs = document.querySelectorAll<HTMLInputElement>('li input');
 
-  font.load()
-    .then(function (loadedFont) {
-      const fontFaceSet = document.fonts;
-      fontFaceSet.add(loadedFont);
+		font
+			.load()
+			.then(function (loadedFont) {
+				const fontFaceSet = document.fonts;
+				fontFaceSet.add(loadedFont);
 
-      for (const input of Array.from(inputs)) {
-        const inputForAttribute = input.getAttribute('for');
-        if (inputForAttribute) {
-          const text = stage.findOne<Konva.Text>('#' + inputForAttribute);
-          if (text) {
-            text.fontFamily(fontName);
-          }
-        }
-      }
-    })
-    .catch(function (error) {
-      console.error('Font loading failed: ', error);
-    });
-};
+				for (const input of Array.from(inputs)) {
+					const inputForAttribute = input.getAttribute('for');
+					if (inputForAttribute) {
+						const text = stage.findOne<Konva.Text>('#' + inputForAttribute);
+						if (text) {
+							text.fontFamily(fontName);
+						}
+					}
+				}
+			})
+			.catch(function (error) {
+				console.error('Font loading failed: ', error);
+			});
+	};
 
 	const initSelectList = () => {
 		const chooseElements = document.querySelectorAll('#order-list div > ul');
@@ -916,7 +916,13 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 		stage.scale({ x: scale, y: scale });
 	};
 
-	const createKonvaText = async (layer: any, imageId: string, groupName: string, defaultShowText: boolean, hashtagPart: boolean | string) => {
+	const createKonvaText = async (
+		layer: any,
+		imageId: string,
+		groupName: string,
+		defaultShowText: boolean,
+		hashtagPart: boolean | string
+	) => {
 		const fontName = layer.text_data.font_name
 			.replaceAll("'", '')
 			.split('-')[0]
@@ -942,7 +948,7 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 		const konvaText = new Konva.Text({
 			x: layer.x + justifyX,
 			y: layer.y + justifyY,
-			text: defaultShowText  ? layer.text_data.text.replaceAll('.', '') : '',
+			text: defaultShowText ? layer.text_data.text.replaceAll('.', '') : '',
 			stroke: layer.text_data.stroke_color,
 			strokeWidth: layer.text_data.stroke_width,
 			name: layer.name,
@@ -978,7 +984,13 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 		}
 	};
 
-	const createKonvaTextPath = async (layer: LayerConfig, imageId: string, groupName: string, defaultShowText: boolean, hashtagPart: boolean  | string) => {
+	const createKonvaTextPath = async (
+		layer: LayerConfig,
+		imageId: string,
+		groupName: string,
+		defaultShowText: boolean,
+		hashtagPart: boolean | string
+	) => {
 		const fontName = layer.text_data.font_name
 			.replaceAll("'", '')
 			.split('-')[0]
@@ -1032,7 +1044,14 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 		}
 	};
 
-	const createKonvaLayer = async (layer: any, zip: any, files: FileList | any, imageId: string, groupName: string, hashtagPart: boolean | string) => {
+	const createKonvaLayer = async (
+		layer: any,
+		zip: any,
+		files: FileList | any,
+		imageId: string,
+		groupName: string,
+		hashtagPart: boolean | string
+	) => {
 		const imageUrl: any = await getImageUrl(layer, zip, files);
 
 		const imageElement: any = await createImageElementFromUrl(imageUrl);
@@ -1064,7 +1083,7 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 
 		if (layer.name.startsWith('#')) {
 			konvaImage.addEventListener('click', async () => {
-        //@ts-ignore
+				//@ts-ignore
 				document.querySelector('#' + imageId)!.click();
 			});
 		}
@@ -1288,7 +1307,7 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 						layer.name
 					}" maxlength="12"</input>`;
 
-				liElement.addEventListener('input', (e ) => {
+				liElement.addEventListener('input', (e) => {
 					const textpath: TextPath | undefined = stage.findOne('#' + imageId);
 
 					if (!textpath) {
@@ -1400,11 +1419,11 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 				Notiflix.Loading.standard('<span id="processed-layers">Processing</span>');
 
 				resetContainer();
-        const forAttribute = elem.getAttribute('for');
-        if (forAttribute) {
-          await processZip(psdData, zip, files, forAttribute);
-        }
-        Notiflix.Loading.remove();
+				const forAttribute = elem.getAttribute('for');
+				if (forAttribute) {
+					await processZip(psdData, zip, files, forAttribute);
+				}
+				Notiflix.Loading.remove();
 			});
 		});
 
@@ -1456,7 +1475,7 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 		if (value.success) {
 			const template = value.data;
 			psdData = template.psdData;
-      		//@ts-ignore
+			//@ts-ignore
 			await processZip(template.psdData);
 			Notiflix.Loading.remove();
 		} else {
@@ -1471,7 +1490,7 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 
 		if (value.success) {
 			if (value.data) {
-        		//@ts-ignore
+				//@ts-ignore
 				await processZip(value.data);
 			} else {
 				Toastify({
@@ -1493,11 +1512,11 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 
 	//@ts-ignore
 	window.electronAPI.onProcessing((data: { data: string }) => {
-    const processedLayersElement = document.querySelector<HTMLElement>('#processed-layers');
-    if (processedLayersElement) {
-    processedLayersElement.innerHTML = data.data;
-  }
-  });
+		const processedLayersElement = document.querySelector<HTMLElement>('#processed-layers');
+		if (processedLayersElement) {
+			processedLayersElement.innerHTML = data.data;
+		}
+	});
 
 	window.addEventListener('DOMContentLoaded', async () => {
 		//@ts-ignore
@@ -1516,7 +1535,7 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 </svelte:head>
 
 <div class="flex overflow-hidden">
-	<canvas
+	<!-- <canvas
 		id="check-font-container"
 		width="500"
 		height="100"
@@ -1533,9 +1552,10 @@ const setFontFromArrayBuffer = (fontData: ArrayBuffer | string, fontName: string
 	>
 		<div id="container" />
 		<div id="temp-container" class="hidden" />
-	</div>
+	</div> -->
 
-	<!-- <Sidebar /> -->
+    <Canvas {checkFontInstalled}/>
+	<!-- <Sidebar {orderListElement} {stage} {konvaLayer} {resetContainer} {orderListContent} {createLayer}/> -->
 	<!-- <Buttons /> -->
 
 	<div
