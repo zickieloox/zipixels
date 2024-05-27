@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-async function handleSaveFont(fontData: any, fontName: string): Promise<void> {
+async function handleSaveFont(fontData, fontName: string): Promise<void> {
   const currentDirectory = process.cwd();
   if (!currentDirectory.endsWith('tebpixels-be') && !currentDirectory.endsWith('tebpixels')) {
     process.chdir('..');

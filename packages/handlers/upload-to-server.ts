@@ -6,9 +6,13 @@ import {v4 as uuidv4} from 'uuid';
 import sharp from 'sharp';
 import {S3} from '@aws-sdk/client-s3';
 import {NodeHttpHandler} from '@smithy/node-http-handler';
-import axios from 'axios';
 
 const {writeFile, readFile, readdir} = fsPromises;
+
+interface Image {
+  bucket: string;
+  key: string;
+}
 
 const bucketName = process.env.S3_BUCKET_NAME!;
 const endpoint = process.env.AWS_S3_ENDPOINT!;
@@ -47,7 +51,7 @@ async function handleUploadToServer(event, fileName: string, fileSize: number): 
       throw new Error('Name and size is required');
     }
 
-    const images = [];
+    const images: Image[] = [];
 
     // * Upload Preview
     const currentTime = new Date().toLocaleDateString('en-ZA');
@@ -113,16 +117,16 @@ async function handleUploadToServer(event, fileName: string, fileSize: number): 
     psdJson.width = psdJson.width > 0 ? psdJson.width : 1000;
     psdJson.height = psdJson.height > 0 ? psdJson.height : 1000;
 
-    const response = await axios.post('https://tebpixels.tebprint.com/upload', {
-      name: fileName.replace('.psd', ''),
-      fileSize: fileSize,
-      psdData: JSON.stringify({...psdJson, layers: layers}),
-      images: JSON.stringify(images),
-      preview: previewPublicURL,
-      width: psdJson.width,
-      height: psdJson.height,
-      zip: zipPublicURL,
-    });
+    // const response = await axios.post('https://tebpixels.tebprint.com/upload', {
+    //   name: fileName.replace('.psd', ''),
+    //   fileSize: fileSize,
+    //   psdData: JSON.stringify({...psdJson, layers: layers}),
+    //   images: JSON.stringify(images),
+    //   preview: previewPublicURL,
+    //   width: psdJson.width,
+    //   height: psdJson.height,
+    //   zip: zipPublicURL,
+    // });
     event.reply('process-psd-done', {
       success: true,
       message: 'Process finished successfully',

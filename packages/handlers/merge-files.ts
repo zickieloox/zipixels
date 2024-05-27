@@ -5,7 +5,7 @@ import path from 'path';
 
 const JSON_FILE = 'images_data.json';
 
-async function handleMergeDxfFiles(event: any, filePaths: string[]) {
+async function handleMergeDxfFiles(event, filePaths: string[]) {
   if (filePaths.length < 1) {
     return;
   }

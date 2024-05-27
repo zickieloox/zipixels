@@ -6,10 +6,39 @@ import svg2img from 'svg2img';
 import {optimize} from 'svgo';
 import path from 'path';
 
+type SvgLayer = {
+  name: string;
+  layerId: string;
+  visible: boolean;
+  opacity: number;
+  blend_mode: 'NORMAL' | string; // Assuming 'NORMAL' is a default but can be other string values
+  kind: 'pixel' | string; // Assuming 'pixel' is a default but can be other string values
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+  children: null | SvgLayer[]; // Assuming children can be null or an array of Layers
+  is_group: boolean;
+  image_path: string | null;
+  crop_image_path: string | null;
+  text_data: null | object; // Assuming text_data can be null or an object (define the object structure if known)
+  raw_image_path: string | null;
+  z_index?: null | number;
+  thumb_image_path: string | null;
+  fill_color?: string;
+  svg_path?: null | string;
+  scaleX?: null | number;
+  scaleY?: null | number;
+  skewY?: null | number;
+  skewX?: null | number;
+  translateX?: number;
+  translateY?: number;
+};
+
 // Optimize and minify svg which using Adobe Illustrator Save as with "Preserve Illustrator Editing Capabilities"
 const SVGOOptimize = svgString => {
   return optimize(svgString, {
-    name: 'multipass',
+    multipass: true,
     plugins: [
       {
         name: 'removeDoctype',
@@ -278,8 +307,10 @@ const itemSvgStringFromPath = (pathData, viewBox, outputPath, rawOutputPath = ''
   svg.path(pathData);
   if (outputPath.toLowerCase().includes('vector')) {
     const path = svg.findOne('path');
-    path.stroke('red');
-    path.fill('none');
+    if (path) {
+      path.stroke('red');
+      path.fill('none');
+    }
   }
 
   // raw
@@ -290,7 +321,9 @@ const itemSvgStringFromPath = (pathData, viewBox, outputPath, rawOutputPath = ''
 
   // Parse SVG string to extract width and height
   const {width, height, x, y} = svg.bbox();
-  const croppedViewBox = [x, y, width, height];
+
+  const croppedViewBox: [number, number, number, number] = [x, y, width, height];
+
   svg.viewbox(...croppedViewBox);
 
   // Create SVG file
@@ -400,23 +433,23 @@ const extractSvg = async (filePath, outputFolder) => {
   const canvas = SVG(document.documentElement);
 
   canvas.svg(optimizedSvgString);
-  const layers = [];
+  const layers: SvgLayer[] = [];
   const style = document.querySelector('style');
   const viewBox = document.querySelector('svg')?.childNodes[0].getAttribute('viewBox');
   let styleObj =
     style && style.childNodes[0] ? convertStringCssToObject(style.childNodes[0].data) : null;
   const groups = document.querySelectorAll('g');
-  const createImagePromises = [];
+  const createImagePromises: Promise<void>[] = [];
   for (const group of groups) {
     zIndex++;
     const groupName = group.getAttribute('data-name') || group.id || '';
-    const children = [];
+    const children: SvgLayer[] = [];
     for (const layer of group.childNodes) {
       if (!group.id) {
         continue;
       }
       const layerId = layer.id || randomString(8);
-      let rasterImage = document.querySelector(`#${layerId}`);
+      let rasterImage: Element | ChildNode | null = document.querySelector(`#${layerId}`);
 
       if (!rasterImage && layer.nodeValue && `${layer.nodeValue}`.includes('\n')) {
         continue;
@@ -426,9 +459,9 @@ const extractSvg = async (filePath, outputFolder) => {
         rasterImage = layer;
       }
 
-      const xlinkHref = rasterImage?.getAttribute('xlink:href');
-      const pathData = rasterImage?.getAttribute('d');
-      const layerName = layer?.getAttribute('data-name')?.split('-')[0] || '';
+      const xlinkHref = (rasterImage as Element)?.getAttribute('xlink:href');
+      const pathData = (rasterImage as Element)?.getAttribute('d');
+      const layerName = (layer as Element)?.getAttribute('data-name')?.split('-')[0] || '';
       if (
         !xlinkHref &&
         !pathData &&
@@ -488,15 +521,15 @@ const extractSvg = async (filePath, outputFolder) => {
 
       const classOfLayer = layer.attrs;
       const classArray = [...classOfLayer];
-      const classes = classArray.find(attr => attr.nodeName === 'class');
+      // const classes = classArray.find(attr => attr.nodeName === 'class');
       const styles = classArray.find(attr => attr.nodeName === 'style');
 
       if (styles && styles.nodeValue) {
         styleObj = convertStyleInlineCssToObject(styles.nodeValue);
       }
 
-      const classStyleObj =
-        style && style.childNodes[0] ? convertStringCssToObject(style.childNodes[0].data) : null;
+      // const classStyleObj =
+      //   style && style.childNodes[0] ? convertStringCssToObject(style.childNodes[0].data) : null;
       const transforms = classArray.find(attr => attr.nodeName === 'transform');
       let scaleX = 1,
         skewY = 0,
@@ -518,34 +551,35 @@ const extractSvg = async (filePath, outputFolder) => {
       }
 
       if (groupName.toLowerCase().includes('color')) {
-        const fill_color = styleObj['fill'] || '#FF0000';
+        const fill_color = styleObj!['fill'] || '#FF0000';
         const width = 100;
         const height = 100;
+        // createImagePromises.push(
         createImagePromises.push(
-          createImagePromises.push(
-            createColorImage(outputPath, thumbOutputPath, fill_color, width, height),
-          ),
-        );
-        children.unshift({
-          name: layerName || layerId,
-          visible: false,
-          opacity: 255,
-          blend_mode: 'NORMAL',
-          kind: 'pixel',
-          width: Number(width),
-          height: Number(height),
-          x: 0,
-          y: 0,
-          children: null,
-          is_group: false,
-          image_path: `${outputPath}.png`,
-          crop_image_path: thumbOutputPath,
-          text_data: null,
-          raw_image_path: `${outputPath}.png`,
-          z_index: 0,
-          thumb_image_path: thumbOutputPath,
-          fill_color: fill_color,
-        });
+          createColorImage(outputPath, thumbOutputPath, fill_color, width, height),
+        ),
+          // );
+          children.unshift({
+            name: layerName || layerId,
+            visible: false,
+            opacity: 255,
+            blend_mode: 'NORMAL',
+            kind: 'pixel',
+            width: Number(width),
+            height: Number(height),
+            x: 0,
+            y: 0,
+            children: null,
+            is_group: false,
+            image_path: `${outputPath}.png`,
+            crop_image_path: thumbOutputPath,
+            text_data: null,
+            raw_image_path: `${outputPath}.png`,
+            z_index: 0,
+            thumb_image_path: thumbOutputPath,
+            fill_color: fill_color,
+            layerId: 'unknown',
+          });
       } else if (groupName.toLowerCase() === 'size') {
         createImagePromises.push(createImageText(outputPath, thumbOutputPath, cropPath, layerName));
         const imagePathExtension = 'png';
@@ -568,6 +602,7 @@ const extractSvg = async (filePath, outputFolder) => {
           z_index: zIndex,
           thumb_image_path: thumbOutputPath,
           // crop_image_path: cropPath,
+          layerId: 'unknown',
         });
       } else {
         createImagePromises.push(
@@ -608,6 +643,7 @@ const extractSvg = async (filePath, outputFolder) => {
           translateX: translateX ? Number(translateX) : 0,
           translateY: translateY ? Number(translateY) : 0,
           rotate: rotate ? Number(rotate) : null,
+          layerId: 'unknown',
         });
       }
     }
@@ -733,26 +769,26 @@ const extractSvg = async (filePath, outputFolder) => {
       const textElement = group.querySelector('text');
       const tspanElement = group.querySelector('tspan');
 
-      const font_size = tspanElement?.style.fontSize.replace('px', '');
+      const font_size: any = tspanElement?.style.fontSize.replace('px', '');
       const fill_color = pathElement?.style.fill == 'none' ? '#000000' : pathElement?.style.fill;
 
       const rect = textElement?.getBoundingClientRect();
-      const width = textElement?.getAttribute('width');
+      // const width = textElement?.getAttribute('width');
       const y = rect?.y || 0;
       const x = rect?.x || 0;
-      const height = textElement?.getAttribute('height');
-      const widthOfText = font_size * (tspanElement.textContent.length || 5) * 0.8;
-      const heightOfText = font_size * 1.5;
+      // const height = textElement?.getAttribute('height');
+      const widthOfText = Number(font_size) * (tspanElement?.textContent?.length || 5) * 0.8;
+      const heightOfText = Number(font_size) * 1.5;
 
       const stroke_color = tspanElement!.style.stroke || '#000000';
       const stroke_width = tspanElement!.style.strokeWidth || 0;
-      const scaleX = 1,
-        skewY = 0,
-        skewX = 0,
-        scaleY = 1,
-        translateX = 0,
-        translateY = 0,
-        rotate = tspanElement!.rotate || 0;
+      // const scaleX = 1,
+      //   skewY = 0,
+      //   skewX = 0,
+      //   scaleY = 1,
+      //   translateX = 0,
+      //   translateY = 0,
+      const rotate = tspanElement!.rotate || 0;
 
       children.unshift({
         name: randomString(8),
@@ -816,6 +852,9 @@ const extractSvg = async (filePath, outputFolder) => {
       text_data: null,
       raw_image_path: null,
       z_index: zIndex,
+      crop_image_path: null,
+      thumb_image_path: null,
+      layerId: 'unknown',
     });
   }
 

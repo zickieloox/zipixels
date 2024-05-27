@@ -13,6 +13,7 @@
 	import type { TextPath } from 'konva/lib/shapes/TextPath';
 	import type { Path } from 'konva/lib/shapes/Path';
 	import type { LayerConfig } from 'konva/lib/Layer';
+	import Canvas from './components/Canvas.svelte';
 
 	let canvasWrapperElement: HTMLDivElement | null = null;
 
@@ -62,78 +63,78 @@
 	let initTextPathFontSize: number[] = [];
 	let textPathnum = -1;
 
-	let checkFontCanvas: HTMLCanvasElement;
-	let checkFontContext;
-	onMount(() => {
-		checkFontContext = checkFontCanvas.getContext('2d');
-	});
-	const arialSVG = encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
-  <foreignObject width="100%" height="100%">
-    <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
-      <span style="font-family:Arial;">The brown fox jumps over a fence</span>
-    </div>
-  </foreignObject>
-</svg>
-`);
-	const img = new Image();
+// 	let checkFontCanvas: HTMLCanvasElement;
+// 	let checkFontContext;
+// 	onMount(() => {
+// 		checkFontContext = checkFontCanvas.getContext('2d');
+// 	});
+// 	const arialSVG = encodeURIComponent(`
+// <svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
+//   <foreignObject width="100%" height="100%">
+//     <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
+//       <span style="font-family:Arial;">The brown fox jumps over a fence</span>
+//     </div>
+//   </foreignObject>
+// </svg>
+// `);
+// 	const img = new Image();
 
-	img.src = 'data:image/svg+xml,' + arialSVG;
+// 	img.src = 'data:image/svg+xml,' + arialSVG;
 
-	let arialBmp;
+// 	let arialBmp;
 
-	setTimeout(() => {
-		checkFontContext!.drawImage(img, 0, 0);
-		arialBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
-		checkFontContext!.clearRect(0, 0, checkFontCanvas.width, checkFontCanvas.height);
-	}, 0);
+// 	setTimeout(() => {
+// 		checkFontContext!.drawImage(img, 0, 0);
+// 		arialBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
+// 		checkFontContext!.clearRect(0, 0, checkFontCanvas.width, checkFontCanvas.height);
+// 	}, 0);
 
 	const checkFontInstalled = (font: any) => {
-		const fontToTest = font.replaceAll('"', '');
-		if (fontToTest.toLowerCase().includes('arial')) {
-			return Promise.resolve(true);
-		}
+	// 	const fontToTest = font.replaceAll('"', '');
+	// 	if (fontToTest.toLowerCase().includes('arial')) {
+	// 		return Promise.resolve(true);
+	// 	}
 
-		const fontSVG = encodeURIComponent(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
-      <foreignObject width="100%" height="100%">
-        <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
-          <span style="font-family: ${fontToTest}, Arial;">The brown fox jumps over a fence</span>
-        </div>
-      </foreignObject>
-    </svg>
-  `);
+	// 	const fontSVG = encodeURIComponent(`
+  //   <svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
+  //     <foreignObject width="100%" height="100%">
+  //       <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
+  //         <span style="font-family: ${fontToTest}, Arial;">The brown fox jumps over a fence</span>
+  //       </div>
+  //     </foreignObject>
+  //   </svg>
+  // `);
 
-		const img = new Image();
-		img.src = 'data:image/svg+xml,' + fontSVG;
+	// 	const img = new Image();
+	// 	img.src = 'data:image/svg+xml,' + fontSVG;
 
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				checkFontContext!.drawImage(img, 0, 0);
+	// 	return new Promise((resolve) => {
+	// 		setTimeout(() => {
+	// 			checkFontContext!.drawImage(img, 0, 0);
 
-				const fontBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
+	// 			const fontBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
 
-				let isAllZero = true;
-				for (let i = 0; i < fontBmp.length; i++) {
-					if (fontBmp[i] !== 0) {
-						isAllZero = false;
-						break;
-					}
-				}
+	// 			let isAllZero = true;
+	// 			for (let i = 0; i < fontBmp.length; i++) {
+	// 				if (fontBmp[i] !== 0) {
+	// 					isAllZero = false;
+	// 					break;
+	// 				}
+	// 			}
 
-				if (isAllZero) {
-					resolve(false);
-				}
+	// 			if (isAllZero) {
+	// 				resolve(false);
+	// 			}
 
-				for (let i = 0; i < arialBmp.length; i++) {
-					if (arialBmp![i] !== fontBmp[i]) {
-						resolve(true);
-					}
-				}
+	// 			for (let i = 0; i < arialBmp.length; i++) {
+	// 				if (arialBmp![i] !== fontBmp[i]) {
+	// 					resolve(true);
+	// 				}
+	// 			}
 
-				resolve(false);
-			}, 0);
-		});
+	// 			resolve(false);
+	// 		}, 0);
+	// 	});
 	};
 
 	//KonvaStage
@@ -214,11 +215,13 @@
 
 	onMount(drawKonva);
 
+  let orderListContent = '';
 	//
 	const resetContainer = (): void => {
 		imageIds.length = 0;
 		unknownCount = 1;
-		orderListElement.innerHTML = '';
+		// orderListElement.innerHTML = '';
+    orderListContent = '';
 		psdData = null;
 		fileName = '';
 		fileSize = 0;
@@ -1532,7 +1535,7 @@
 </svelte:head>
 
 <div class="flex overflow-hidden">
-	<canvas
+	<!-- <canvas
 		id="check-font-container"
 		width="500"
 		height="100"
@@ -1549,12 +1552,13 @@
 	>
 		<div id="container" />
 		<div id="temp-container" class="hidden" />
-	</div>
+	</div> -->
 
-	<Sidebar {orderListElement} {stage} {konvaLayer} {resetContainer} />
+    <Canvas />
+	<!-- <Sidebar {orderListElement} {stage} {konvaLayer} {resetContainer} {orderListContent} {createLayer} {exportImage} {processZip}/> -->
 	<!-- <Buttons /> -->
 
-	<!-- <div
+	<div
 		class="w-[25%] h-[100vh] bg-yellow-50 relative"
 		style="max-width: 25%; min-width: 25%;"
 		id="sidebar"
@@ -1589,7 +1593,7 @@
             "
 			/>
 		</div>
-	</div> -->
+	</div>
 
 	<input
 		type="range"
@@ -1685,7 +1689,7 @@
 	</select>
 </div>
 
-<style>
+<!-- <style>
 	#canvas-wrapper {
 		/* border: 1px solid black !important; */
 		background: url('https://i.imgur.com/Jo2gxXr.png');
@@ -1694,4 +1698,4 @@
 	li {
 		list-style: none;
 	}
-</style>
+</style> -->

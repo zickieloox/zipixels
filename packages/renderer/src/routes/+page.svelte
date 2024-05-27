@@ -63,78 +63,70 @@
 	let initTextPathFontSize: number[] = [];
 	let textPathnum = -1;
 
-// 	let checkFontCanvas: HTMLCanvasElement;
-// 	let checkFontContext;
-// 	onMount(() => {
-// 		checkFontContext = checkFontCanvas.getContext('2d');
-// 	});
-// 	const arialSVG = encodeURIComponent(`
-// <svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
-//   <foreignObject width="100%" height="100%">
-//     <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
-//       <span style="font-family:Arial;">The brown fox jumps over a fence</span>
-//     </div>
-//   </foreignObject>
-// </svg>
-// `);
-// 	const img = new Image();
+	// 	let checkFontCanvas: HTMLCanvasElement;
+	// 	let checkFontContext;
+	// 	onMount(() => {
+	// 		checkFontContext = checkFontCanvas.getContext('2d');
+	// 	});
+	// 	const arialSVG = encodeURIComponent(`
+	// <svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
+	//   <foreignObject width="100%" height="100%">
+	//     <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
+	//       <span style="font-family:Arial;">The brown fox jumps over a fence</span>
+	//     </div>
+	//   </foreignObject>
+	// </svg>
+	// `);
+	// 	const img = new Image();
 
-// 	img.src = 'data:image/svg+xml,' + arialSVG;
+	// 	img.src = 'data:image/svg+xml,' + arialSVG;
 
-// 	let arialBmp;
+	// 	let arialBmp;
 
-// 	setTimeout(() => {
-// 		checkFontContext!.drawImage(img, 0, 0);
-// 		arialBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
-// 		checkFontContext!.clearRect(0, 0, checkFontCanvas.width, checkFontCanvas.height);
-// 	}, 0);
+	// 	setTimeout(() => {
+	// 		checkFontContext!.drawImage(img, 0, 0);
+	// 		arialBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
+	// 		checkFontContext!.clearRect(0, 0, checkFontCanvas.width, checkFontCanvas.height);
+	// 	}, 0);
 
 	const checkFontInstalled = (font: any) => {
-	// 	const fontToTest = font.replaceAll('"', '');
-	// 	if (fontToTest.toLowerCase().includes('arial')) {
-	// 		return Promise.resolve(true);
-	// 	}
-
-	// 	const fontSVG = encodeURIComponent(`
-  //   <svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
-  //     <foreignObject width="100%" height="100%">
-  //       <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
-  //         <span style="font-family: ${fontToTest}, Arial;">The brown fox jumps over a fence</span>
-  //       </div>
-  //     </foreignObject>
-  //   </svg>
-  // `);
-
-	// 	const img = new Image();
-	// 	img.src = 'data:image/svg+xml,' + fontSVG;
-
-	// 	return new Promise((resolve) => {
-	// 		setTimeout(() => {
-	// 			checkFontContext!.drawImage(img, 0, 0);
-
-	// 			const fontBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
-
-	// 			let isAllZero = true;
-	// 			for (let i = 0; i < fontBmp.length; i++) {
-	// 				if (fontBmp[i] !== 0) {
-	// 					isAllZero = false;
-	// 					break;
-	// 				}
-	// 			}
-
-	// 			if (isAllZero) {
-	// 				resolve(false);
-	// 			}
-
-	// 			for (let i = 0; i < arialBmp.length; i++) {
-	// 				if (arialBmp![i] !== fontBmp[i]) {
-	// 					resolve(true);
-	// 				}
-	// 			}
-
-	// 			resolve(false);
-	// 		}, 0);
-	// 	});
+		// 	const fontToTest = font.replaceAll('"', '');
+		// 	if (fontToTest.toLowerCase().includes('arial')) {
+		// 		return Promise.resolve(true);
+		// 	}
+		// 	const fontSVG = encodeURIComponent(`
+		//   <svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
+		//     <foreignObject width="100%" height="100%">
+		//       <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">
+		//         <span style="font-family: ${fontToTest}, Arial;">The brown fox jumps over a fence</span>
+		//       </div>
+		//     </foreignObject>
+		//   </svg>
+		// `);
+		// 	const img = new Image();
+		// 	img.src = 'data:image/svg+xml,' + fontSVG;
+		// 	return new Promise((resolve) => {
+		// 		setTimeout(() => {
+		// 			checkFontContext!.drawImage(img, 0, 0);
+		// 			const fontBmp = checkFontContext!.getImageData(0, 0, 500, 100).data;
+		// 			let isAllZero = true;
+		// 			for (let i = 0; i < fontBmp.length; i++) {
+		// 				if (fontBmp[i] !== 0) {
+		// 					isAllZero = false;
+		// 					break;
+		// 				}
+		// 			}
+		// 			if (isAllZero) {
+		// 				resolve(false);
+		// 			}
+		// 			for (let i = 0; i < arialBmp.length; i++) {
+		// 				if (arialBmp![i] !== fontBmp[i]) {
+		// 					resolve(true);
+		// 				}
+		// 			}
+		// 			resolve(false);
+		// 		}, 0);
+		// 	});
 	};
 
 	//KonvaStage
@@ -142,6 +134,7 @@
 	let tempStage: Konva.Stage;
 	let konvaLayer: Konva.Layer;
 	let tempKonvaLayer: Konva.Layer;
+
 	function drawKonva() {
 		stage = new Konva.Stage({
 			container: 'container',
@@ -215,13 +208,13 @@
 
 	onMount(drawKonva);
 
-  let orderListContent = '';
 	//
 	const resetContainer = (): void => {
 		imageIds.length = 0;
 		unknownCount = 1;
-		// orderListElement.innerHTML = '';
-    orderListContent = '';
+		if (orderListElement) {
+			orderListElement.innerHTML = '';
+		}
 		psdData = null;
 		fileName = '';
 		fileSize = 0;
@@ -266,102 +259,92 @@
 
 	//exportImage
 	const exportImage = (outputFileName = '', width = null, height = null) => {
-		const orderListElements: any = document.querySelectorAll(
-			'#order-list div ul li img[data-is-visible="1"]'
-		);
-		const textElements = document.querySelectorAll<HTMLInputElement>('#order-list div ul li input');
-		const exportImageObjects: any[] = [...copyElements];
-		orderListElements.forEach((elem: any) => {
-			const obj = stage.findOne('#' + elem.alt);
-
-			if (obj) exportImageObjects.push(obj);
-		});
-
-		if (exportImageObjects.length === 0) {
-			Toastify({
-				text: 'No selected items',
-				duration: 3000,
-				position: 'right',
-				style: {
-					background: 'linear-gradient(to right, #ff5f6d, #ffc371)'
-				}
-			}).showToast();
-			return;
-		}
-
-		textElements.forEach((elem) => {
-			const textLayer: Text | undefined = stage.findOne('#' + elem!.parentElement!.id);
-			if (textLayer && textLayer.textWidth > 0) {
-				exportImageObjects.push(textLayer);
-			}
-		});
-
-		let minX = Number.POSITIVE_INFINITY;
-		let minY = Number.POSITIVE_INFINITY;
-		let maxX = Number.NEGATIVE_INFINITY;
-		let maxY = Number.NEGATIVE_INFINITY;
-		let maxWidth = 0;
-		let maxHeight = 0;
-		const offset = 10;
-
-		exportImageObjects.forEach((obj) => {
-			minX = Math.min(minX, obj.attrs.x);
-			minY = Math.min(minY, obj.attrs.y);
-			maxX = Math.max(maxX, obj.attrs.x + (obj.attrs.width || obj.textWidth));
-			maxY = Math.max(maxY, obj.attrs.y + (obj.attrs.height || obj.textHeight));
-			maxWidth = Math.max(maxWidth, obj.attrs.width || obj.textWidth);
-			maxHeight = Math.max(maxHeight, obj.attrs.height || obj.textHeight);
-		});
-
-		const exportImages: any[] = [];
-		exportImageObjects.forEach(function (obj) {
-			const clonedObj = obj.clone();
-			clonedObj.setAttrs({
-				x: obj.attrs.x - minX,
-				y: obj.attrs.y - minY + 144
-			});
-
-			if (clonedObj.text) {
-				tempKonvaLayer.add(clonedObj);
-				const bufferData = tempKonvaLayer.toDataURL({
-					x: clonedObj.attrs.x,
-					y: clonedObj.attrs.y,
-					width: obj.width(),
-					height: obj.height() * 2
-				});
-				clonedObj.setAttrs({
-					width: obj.width(),
-					height: obj.height() * 2,
-					imagePath: bufferData
-				});
-				tempKonvaLayer.destroyChildren();
-			}
-
-			exportImages.push({ ...clonedObj.attrs });
-		});
-
-		let screenShot = null;
-		if (width && width !== 0 && height && height !== 0) {
-			screenShot = stage.toDataURL({
-				x: 0,
-				y: 0,
-				width: width * stage.scaleX(),
-				height: height * stage.scaleY()
-			});
-		} else {
-			screenShot = stage.toDataURL();
-		}
-
-		const exportData = {
-			fileName: outputFileName || 'export_image.png',
-			images: exportImages,
-			screenShot,
-			width: maxWidth || 0,
-			height: maxHeight || 0,
-			scale: currentScale
-		};
-		//@ts-ignore
-		window.electronAPI.exportImage(exportData);
+		// const orderListElements: any = document.querySelectorAll(
+		// 	'#order-list div ul li img[data-is-visible="1"]'
+		// );
+		// const textElements = document.querySelectorAll<HTMLInputElement>('#order-list div ul li input');
+		// const exportImageObjects: any[] = [...copyElements];
+		// orderListElements.forEach((elem: any) => {
+		// 	const obj = stage.findOne('#' + elem.alt);
+		// 	if (obj) exportImageObjects.push(obj);
+		// });
+		// if (exportImageObjects.length === 0) {
+		// 	Toastify({
+		// 		text: 'No selected items',
+		// 		duration: 3000,
+		// 		position: 'right',
+		// 		style: {
+		// 			background: 'linear-gradient(to right, #ff5f6d, #ffc371)'
+		// 		}
+		// 	}).showToast();
+		// 	return;
+		// }
+		// textElements.forEach((elem) => {
+		// 	const textLayer: Text | undefined = stage.findOne('#' + elem!.parentElement!.id);
+		// 	if (textLayer && textLayer.textWidth > 0) {
+		// 		exportImageObjects.push(textLayer);
+		// 	}
+		// });
+		// let minX = Number.POSITIVE_INFINITY;
+		// let minY = Number.POSITIVE_INFINITY;
+		// let maxX = Number.NEGATIVE_INFINITY;
+		// let maxY = Number.NEGATIVE_INFINITY;
+		// let maxWidth = 0;
+		// let maxHeight = 0;
+		// const offset = 10;
+		// exportImageObjects.forEach((obj) => {
+		// 	minX = Math.min(minX, obj.attrs.x);
+		// 	minY = Math.min(minY, obj.attrs.y);
+		// 	maxX = Math.max(maxX, obj.attrs.x + (obj.attrs.width || obj.textWidth));
+		// 	maxY = Math.max(maxY, obj.attrs.y + (obj.attrs.height || obj.textHeight));
+		// 	maxWidth = Math.max(maxWidth, obj.attrs.width || obj.textWidth);
+		// 	maxHeight = Math.max(maxHeight, obj.attrs.height || obj.textHeight);
+		// });
+		// const exportImages: any[] = [];
+		// exportImageObjects.forEach(function (obj) {
+		// 	const clonedObj = obj.clone();
+		// 	clonedObj.setAttrs({
+		// 		x: obj.attrs.x - minX,
+		// 		y: obj.attrs.y - minY + 144
+		// 	});
+		// 	if (clonedObj.text) {
+		// 		tempKonvaLayer.add(clonedObj);
+		// 		const bufferData = tempKonvaLayer.toDataURL({
+		// 			x: clonedObj.attrs.x,
+		// 			y: clonedObj.attrs.y,
+		// 			width: obj.width(),
+		// 			height: obj.height() * 2
+		// 		});
+		// 		clonedObj.setAttrs({
+		// 			width: obj.width(),
+		// 			height: obj.height() * 2,
+		// 			imagePath: bufferData
+		// 		});
+		// 		tempKonvaLayer.destroyChildren();
+		// 	}
+		// 	exportImages.push({ ...clonedObj.attrs });
+		// });
+		// let screenShot = null;
+		// if (width && width !== 0 && height && height !== 0) {
+		// 	screenShot = stage.toDataURL({
+		// 		x: 0,
+		// 		y: 0,
+		// 		width: width * stage.scaleX(),
+		// 		height: height * stage.scaleY()
+		// 	});
+		// } else {
+		// 	screenShot = stage.toDataURL();
+		// }
+		// const exportData = {
+		// 	fileName: outputFileName || 'export_image.png',
+		// 	images: exportImages,
+		// 	screenShot,
+		// 	width: maxWidth || 0,
+		// 	height: maxHeight || 0,
+		// 	scale: currentScale
+		// };
+		// //@ts-ignore
+		// window.electronAPI.exportImage(exportData);
 	};
 
 	const handleExportImage = (): void => {
@@ -928,7 +911,7 @@
 			.split('-')[0]
 			.replace(/([a-z])([A-Z])/g, '$1 $2');
 
-		const fontAvailable = await checkFontInstalled(`${fontName}`);
+		const fontAvailable: any = await checkFontInstalled(`${fontName}`);
 
 		if (!fontAvailable) {
 			Toastify({
@@ -996,7 +979,7 @@
 			.split('-')[0]
 			.replace(/([a-z])([A-Z])/g, '$1 $2');
 
-		const fontAvailable = await checkFontInstalled(`${fontName}`);
+		const fontAvailable: any = await checkFontInstalled(`${fontName}`);
 
 		if (!fontAvailable) {
 			Toastify({
@@ -1132,214 +1115,191 @@
 		groupName = '',
 		processingLayer: Promise<void>[] = []
 	) => {
-		if (!layer || layer.name.toLowerCase().includes('frame')) return;
-		if (layer.name.toLowerCase().includes('copy')) {
-			createCopyLayer(layer);
-			return;
-		}
-
-		if (level === undefined) level = -1;
-		level += 1;
-
-		const imageId = 'image-' + nanoid(8);
-		imageIds.push(imageId);
-		const [namePart, hashtagPart, atSignPart, vectorPart, sizePart] = splitGroupName(groupName);
-
-		// canvas
-		if (layer.kind === 'type' && layer.text_data) {
-			processingLayer.push(createKonvaText(layer, imageId, namePart, defaultShowText, hashtagPart));
-		} else if (layer.kind === 'textpath' && layer.text_data) {
-			processingLayer.push(
-				createKonvaTextPath(layer, imageId, namePart, defaultShowText, hashtagPart)
-			);
-		} else if (layer.image_path && namePart.toLowerCase() !== 'size') {
-			processingLayer.push(createKonvaLayer(layer, zip, files, imageId, namePart, hashtagPart));
-		}
-
-		if (layer.children && layer.children.length > 0) {
-			const createdAt = new Date().getTime().toString();
-
-			if (!parentElement) {
-				parentElement = orderListElement;
-			}
-
-			const toggleWrapper = document.createElement('div');
-			const toggleElement = document.createElement('button');
-			toggleWrapper.appendChild(toggleElement);
-			parentElement.appendChild(toggleWrapper);
-			toggleElement.id = imageId;
-			toggleWrapper.setAttribute('class', 'w-full my-2');
-			toggleElement.setAttribute('style', `padding-left: ${level * 30 || 8}px`);
-			toggleElement.setAttribute(
-				'class',
-				'flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100'
-			);
-			toggleElement.setAttribute('data-collapse-toggle', `dropdown-${createdAt}`);
-			toggleElement.innerHTML = `
-      <span
-      class="flex-1 ml-3 text-left whitespace-nowrap font-bold"
-      sidebar-toggle-item
-      >${layer.name
-				.replaceAll('<', '')
-				.replaceAll('>', '')
-				.replaceAll('+', '')
-				.replaceAll('\u00A0', ' ')}</span
-      >
-      <svg
-      sidebar-toggle-item
-      class="w-6 h-6"
-      fill="currentColor"
-      viewBox="0 0 20 20"
-      xmlns="http://www.w3.org/2000/svg"
-      >
-      <path
-        fill-rule="evenodd"
-        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-        clip-rule="evenodd"
-      ></path>
-      </svg>`;
-
-			if (layer.name.startsWith('*')) {
-				const isChecked = layer.name === layerOption;
-				toggleWrapper.setAttribute('type', 'option');
-				const toggleOptions = `<input
-        class="w-[10%] toggle-options" for="${layer.name}" type="radio" name="option" ${
-					isChecked ? 'checked' : ''
-				}></input>`;
-				toggleElement.innerHTML = toggleOptions + toggleElement.innerHTML;
-			}
-
-			const ulElement = document.createElement('ul');
-			toggleWrapper.append(ulElement);
-			ulElement.setAttribute('id', `dropdown-${createdAt}`);
-			ulElement.setAttribute('class', 'flex flex-wrap gap-2.5');
-
-			toggleElement.addEventListener('click', () => {
-				handleHtmlLayerClick(layer.name, imageId, toggleElement);
-
-				ulElement.classList.toggle('hidden');
-			});
-
-			for (let i = 0; i < layer.children.length; i++) {
-				const child = layer.children[i];
-				if (layer.name.startsWith('*') && layerOption !== layer.name) {
-					// Skip option layers if it doesn't match the selected option
-					continue;
-				} else {
-					createLayer(child, ulElement, level, zip, files, '', layer.name, processingLayer);
-				}
-			}
-		} else {
-			// sidebar
-			const newParentElement = parentElement || orderListElement;
-			const liElement = document.createElement('li');
-			liElement.id = imageId;
-			const liClasses = ['w-full'];
-
-			if (atSignPart) {
-				const relatedLayerName = layer.name.includes('@')
-					? layer.name.split('@')[0].trim()
-					: layer.name.trim();
-				const relatedName = `${atSignPart}-${relatedLayerName}`.toLowerCase();
-
-				if (relateElements[relatedName]) {
-					relateElements[relatedName].push(imageId);
-				} else {
-					relateElements[relatedName] = [imageId];
-				}
-				if (layer.kind === 'type' && layer.text_data) {
-					liClasses.push('hidden');
-				} else {
-					newParentElement.parentElement!.style.display = 'none';
-				}
-			}
-
-			if (vectorPart) {
-				const relatedLayerName = layer.name.trim();
-				const relatedName = `${vectorPart}-${relatedLayerName}`.toLowerCase();
-				(relateElements[relatedName] = relateElements[relatedName] || []).push(imageId);
-			}
-
-			if (sizePart) {
-				sizeScale[imageId] = layer.name.split(' ')[0];
-			}
-
-			if (layer.kind === 'type' && layer.text_data) {
-				liElement.setAttribute('class', liClasses.join(' '));
-				liElement.innerHTML =
-					`<label for="${imageId}" data-is-visible="0" class="w-full block mb-2 text-md font-md text-black ml-4">
-        ${layer.name.replaceAll('.', '')}</label>` + // (${:  ? layer.name.length : 0}|${layer.text_data.text.length})
-					`<input for="${imageId}" value="${
-						defaultShowText ? layer.text_data.text.replaceAll('.', '') : ''
-					}" type="text" class="h-[40px] w-[90%] border-1 border-black-300 rounded ml-4 p-2 mr-4"  placeholder="${
-						layer.name
-					}" maxlength="12"></input>`;
-				liElement.addEventListener('input', (event) => {
-					const label: any = document.querySelector(`label[for="${imageId}"]`);
-					handleHtmlLayerInputChange(
-						imageId,
-						// @ts-ignore
-						event.target?.value,
-						layer.text_data?.font_size,
-						label
-						// layer.text_data?.text.length,
-					);
-				});
-			} else if (layer.crop_image_path || layer.thumb_image_path) {
-				const imageClassStyle =
-					'w-[76px] h-[76px] object-contain cursor-pointer toggle-visibility border-4 border-transparent rounded-sm';
-				const colorClassStyle =
-					'w-[38px] h-[38px] object-contain cursor-pointer toggle-visibility border-4 border-transparent rounded-full';
-				liElement.innerHTML = `<img class="${
-					namePart === 'color' ? colorClassStyle : imageClassStyle
-				}" draggable="false" data-is-visible="0" data-name="${layer.name.trim()}" data-group-name="${namePart}" src='${
-					layer.crop_image_path
-				}' alt="${imageId}" ></img>`;
-			} else if (layer.kind === 'textpath' && layer.text_data) {
-				textPathnum++;
-				liElement.setAttribute('class', liClasses.join(' '));
-				liElement.innerHTML =
-					`<label for="${imageId}" data-is-visible="0" class="w-full block mb-2 text-md font-md text-black ml-4">
-        ${layer.name.replaceAll('.', '')}</label>` + // (${:  ? layer.name.length : 0}|${layer.text_data.text.length})
-					`<input for="${imageId}" value="${
-						defaultShowText ? layer.text_data.text.replaceAll('.', '') : ''
-					}" type="text" class="h-[40px] w-[90%] border-1 border-black-300 rounded ml-4 p-2 mr-4"  placeholder="${
-						layer.name
-					}" maxlength="12"</input>`;
-
-				liElement.addEventListener('input', (e) => {
-					const textpath: TextPath | undefined = stage.findOne('#' + imageId);
-
-					if (!textpath) {
-						return;
-					}
-
-					const maxFontSize = initTextPathFontSize[textPathnum];
-					const minFontSize = maxFontSize / 2;
-					const overflowText = 1.95;
-
-					textpath.text((e.target as HTMLInputElement)?.value);
-					const textLength = textpath?.text().length;
-					let fontSize = textpath.fontSize();
-					const pathLength = (stage.findOne('#' + imageId + 'path') as Path).getLength();
-
-					while (textLength * fontSize > pathLength * overflowText && fontSize > minFontSize) {
-						fontSize = fontSize - 1;
-						textpath?.fontSize(fontSize);
-					}
-
-					while (textLength * fontSize < pathLength * overflowText && fontSize < maxFontSize) {
-						fontSize = fontSize + 1;
-						textpath?.fontSize(fontSize);
-					}
-				});
-			}
-			newParentElement?.append(liElement);
-
-			liElement.addEventListener('click', () => {
-				handleHtmlLayerClick(layer.name, imageId, liElement);
-			});
-		}
+		// if (!layer || layer.name.toLowerCase().includes('frame')) return;
+		// if (layer.name.toLowerCase().includes('copy')) {
+		// 	createCopyLayer(layer);
+		// 	return;
+		// }
+		// if (level === undefined) level = -1;
+		// level += 1;
+		// const imageId = 'image-' + nanoid(8);
+		// imageIds.push(imageId);
+		// const [namePart, hashtagPart, atSignPart, vectorPart, sizePart] = splitGroupName(groupName);
+		// // canvas
+		// if (layer.kind === 'type' && layer.text_data) {
+		// 	processingLayer.push(createKonvaText(layer, imageId, namePart, defaultShowText, hashtagPart));
+		// } else if (layer.kind === 'textpath' && layer.text_data) {
+		// 	processingLayer.push(
+		// 		createKonvaTextPath(layer, imageId, namePart, defaultShowText, hashtagPart)
+		// 	);
+		// } else if (layer.image_path && namePart.toLowerCase() !== 'size') {
+		// 	processingLayer.push(createKonvaLayer(layer, zip, files, imageId, namePart, hashtagPart));
+		// }
+		// if (layer.children && layer.children.length > 0) {
+		// 	const createdAt = new Date().getTime().toString();
+		// 	if (!parentElement) {
+		// 		parentElement = orderListElement;
+		// 	}
+		// 	const toggleWrapper = document.createElement('div');
+		// 	const toggleElement = document.createElement('button');
+		// 	toggleWrapper.appendChild(toggleElement);
+		// 	parentElement.appendChild(toggleWrapper);
+		// 	toggleElement.id = imageId;
+		// 	toggleWrapper.setAttribute('class', 'w-full my-2');
+		// 	toggleElement.setAttribute('style', `padding-left: ${level * 30 || 8}px`);
+		// 	toggleElement.setAttribute(
+		// 		'class',
+		// 		'flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100'
+		// 	);
+		// 	toggleElement.setAttribute('data-collapse-toggle', `dropdown-${createdAt}`);
+		// 	toggleElement.innerHTML = `
+		//   <span
+		//   class="flex-1 ml-3 text-left whitespace-nowrap font-bold"
+		//   sidebar-toggle-item
+		//   >${layer.name
+		// 		.replaceAll('<', '')
+		// 		.replaceAll('>', '')
+		// 		.replaceAll('+', '')
+		// 		.replaceAll('\u00A0', ' ')}</span
+		//   >
+		//   <svg
+		//   sidebar-toggle-item
+		//   class="w-6 h-6"
+		//   fill="currentColor"
+		//   viewBox="0 0 20 20"
+		//   xmlns="http://www.w3.org/2000/svg"
+		//   >
+		//   <path
+		//     fill-rule="evenodd"
+		//     d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+		//     clip-rule="evenodd"
+		//   ></path>
+		//   </svg>`;
+		// 	if (layer.name.startsWith('*')) {
+		// 		const isChecked = layer.name === layerOption;
+		// 		toggleWrapper.setAttribute('type', 'option');
+		// 		const toggleOptions = `<input
+		//     class="w-[10%] toggle-options" for="${layer.name}" type="radio" name="option" ${
+		// 			isChecked ? 'checked' : ''
+		// 		}></input>`;
+		// 		toggleElement.innerHTML = toggleOptions + toggleElement.innerHTML;
+		// 	}
+		// 	const ulElement = document.createElement('ul');
+		// 	toggleWrapper.append(ulElement);
+		// 	ulElement.setAttribute('id', `dropdown-${createdAt}`);
+		// 	ulElement.setAttribute('class', 'flex flex-wrap gap-2.5');
+		// 	toggleElement.addEventListener('click', () => {
+		// 		handleHtmlLayerClick(layer.name, imageId, toggleElement);
+		// 		ulElement.classList.toggle('hidden');
+		// 	});
+		// 	for (let i = 0; i < layer.children.length; i++) {
+		// 		const child = layer.children[i];
+		// 		if (layer.name.startsWith('*') && layerOption !== layer.name) {
+		// 			// Skip option layers if it doesn't match the selected option
+		// 			continue;
+		// 		} else {
+		// 			createLayer(child, ulElement, level, zip, files, '', layer.name, processingLayer);
+		// 		}
+		// 	}
+		// } else {
+		// 	// sidebar
+		// 	const newParentElement = parentElement || orderListElement;
+		// 	const liElement = document.createElement('li');
+		// 	liElement.id = imageId;
+		// 	const liClasses = ['w-full'];
+		// 	if (atSignPart) {
+		// 		const relatedLayerName = layer.name.includes('@')
+		// 			? layer.name.split('@')[0].trim()
+		// 			: layer.name.trim();
+		// 		const relatedName = `${atSignPart}-${relatedLayerName}`.toLowerCase();
+		// 		if (relateElements[relatedName]) {
+		// 			relateElements[relatedName].push(imageId);
+		// 		} else {
+		// 			relateElements[relatedName] = [imageId];
+		// 		}
+		// 		if (layer.kind === 'type' && layer.text_data) {
+		// 			liClasses.push('hidden');
+		// 		} else {
+		// 			newParentElement.parentElement!.style.display = 'none';
+		// 		}
+		// 	}
+		// 	if (vectorPart) {
+		// 		const relatedLayerName = layer.name.trim();
+		// 		const relatedName = `${vectorPart}-${relatedLayerName}`.toLowerCase();
+		// 		(relateElements[relatedName] = relateElements[relatedName] || []).push(imageId);
+		// 	}
+		// 	if (sizePart) {
+		// 		sizeScale[imageId] = layer.name.split(' ')[0];
+		// 	}
+		// 	if (layer.kind === 'type' && layer.text_data) {
+		// 		liElement.setAttribute('class', liClasses.join(' '));
+		// 		liElement.innerHTML =
+		// 			`<label for="${imageId}" data-is-visible="0" class="w-full block mb-2 text-md font-md text-black ml-4">
+		//     ${layer.name.replaceAll('.', '')}</label>` + // (${:  ? layer.name.length : 0}|${layer.text_data.text.length})
+		// 			`<input for="${imageId}" value="${
+		// 				defaultShowText ? layer.text_data.text.replaceAll('.', '') : ''
+		// 			}" type="text" class="h-[40px] w-[90%] border-1 border-black-300 rounded ml-4 p-2 mr-4"  placeholder="${
+		// 				layer.name
+		// 			}" maxlength="12"></input>`;
+		// 		liElement.addEventListener('input', (event) => {
+		// 			const label: any = document.querySelector(`label[for="${imageId}"]`);
+		// 			handleHtmlLayerInputChange(
+		// 				imageId,
+		// 				// @ts-ignore
+		// 				event.target?.value,
+		// 				layer.text_data?.font_size,
+		// 				label
+		// 				// layer.text_data?.text.length,
+		// 			);
+		// 		});
+		// 	} else if (layer.crop_image_path || layer.thumb_image_path) {
+		// 		const imageClassStyle =
+		// 			'w-[76px] h-[76px] object-contain cursor-pointer toggle-visibility border-4 border-transparent rounded-sm';
+		// 		const colorClassStyle =
+		// 			'w-[38px] h-[38px] object-contain cursor-pointer toggle-visibility border-4 border-transparent rounded-full';
+		// 		liElement.innerHTML = `<img class="${
+		// 			namePart === 'color' ? colorClassStyle : imageClassStyle
+		// 		}" draggable="false" data-is-visible="0" data-name="${layer.name.trim()}" data-group-name="${namePart}" src='${
+		// 			layer.crop_image_path
+		// 		}' alt="${imageId}" ></img>`;
+		// 	} else if (layer.kind === 'textpath' && layer.text_data) {
+		// 		textPathnum++;
+		// 		liElement.setAttribute('class', liClasses.join(' '));
+		// 		liElement.innerHTML =
+		// 			`<label for="${imageId}" data-is-visible="0" class="w-full block mb-2 text-md font-md text-black ml-4">
+		//     ${layer.name.replaceAll('.', '')}</label>` + // (${:  ? layer.name.length : 0}|${layer.text_data.text.length})
+		// 			`<input for="${imageId}" value="${
+		// 				defaultShowText ? layer.text_data.text.replaceAll('.', '') : ''
+		// 			}" type="text" class="h-[40px] w-[90%] border-1 border-black-300 rounded ml-4 p-2 mr-4"  placeholder="${
+		// 				layer.name
+		// 			}" maxlength="12"</input>`;
+		// 		liElement.addEventListener('input', (e) => {
+		// 			const textpath: TextPath | undefined = stage.findOne('#' + imageId);
+		// 			if (!textpath) {
+		// 				return;
+		// 			}
+		// 			const maxFontSize = initTextPathFontSize[textPathnum];
+		// 			const minFontSize = maxFontSize / 2;
+		// 			const overflowText = 1.95;
+		// 			textpath.text((e.target as HTMLInputElement)?.value);
+		// 			const textLength = textpath?.text().length;
+		// 			let fontSize = textpath.fontSize();
+		// 			const pathLength = (stage.findOne('#' + imageId + 'path') as Path).getLength();
+		// 			while (textLength * fontSize > pathLength * overflowText && fontSize > minFontSize) {
+		// 				fontSize = fontSize - 1;
+		// 				textpath?.fontSize(fontSize);
+		// 			}
+		// 			while (textLength * fontSize < pathLength * overflowText && fontSize < maxFontSize) {
+		// 				fontSize = fontSize + 1;
+		// 				textpath?.fontSize(fontSize);
+		// 			}
+		// 		});
+		// 	}
+		// 	newParentElement?.append(liElement);
+		// 	liElement.addEventListener('click', () => {
+		// 		handleHtmlLayerClick(layer.name, imageId, liElement);
+		// 	});
+		// }
 	};
 
 	const validatePSDLayer = (element: any, isNestedError: boolean) => {
@@ -1374,77 +1334,66 @@
 	};
 
 	const processZip = async (psdData: any, zip: any, files: File, layerOption = '') => {
-		if (!validatePsd(psdData)) {
-			alert("Can't nested #");
-
-			return;
-		}
-
-		psdData.layers.sort(layerCustomSort);
-		const processingLayer: any[] = [];
-		for (let i = 0; i < psdData.layers.length; i++) {
-			const layer = psdData.layers[i];
-			if (!layer) return;
-
-			createLayer(
-				layer,
-				undefined,
-				undefined,
-				zip,
-				files,
-				layerOption,
-				layer.name,
-				processingLayer
-			);
-		}
-
-		await Promise.all(processingLayer);
-		resetLayerIndexes();
-
-		document.querySelectorAll<HTMLElement>('.toggle-visibility').forEach((elem) => {
-			elem.addEventListener('click', async function (event) {
-				event.stopPropagation();
-				toggleVisibility(elem);
-			});
-		});
-
-		document.querySelectorAll('.toggle-options').forEach((elem) => {
-			elem.addEventListener('click', async (event) => {
-				event.stopPropagation();
-
-				if (elem.getAttribute('checked') !== null) {
-					return;
-				}
-
-				Notiflix.Loading.standard('<span id="processed-layers">Processing</span>');
-
-				resetContainer();
-				const forAttribute = elem.getAttribute('for');
-				if (forAttribute) {
-					await processZip(psdData, zip, files, forAttribute);
-				}
-				Notiflix.Loading.remove();
-			});
-		});
-
-		initScaleValue();
-		initSelectList();
-		initScreen(psdData.width, psdData.height);
-		exportImage('0', psdData.width, psdData.height);
-		Notiflix.Loading.remove();
-
-		if (psdData.missing_fonts) {
-			for (const fonts of psdData.missing_fonts) {
-				Toastify({
-					text: `Missing font: '${fonts}.ttf'`,
-					duration: 10000,
-					position: 'right',
-					style: {
-						background: 'linear-gradient(to right, #ff5f6d, #ffc371)'
-					}
-				}).showToast();
-			}
-		}
+		// if (!validatePsd(psdData)) {
+		// 	alert("Can't nested #");
+		// 	return;
+		// }
+		// psdData.layers.sort(layerCustomSort);
+		// const processingLayer: any[] = [];
+		// for (let i = 0; i < psdData.layers.length; i++) {
+		// 	const layer = psdData.layers[i];
+		// 	if (!layer) return;
+		// 	createLayer(
+		// 		layer,
+		// 		undefined,
+		// 		undefined,
+		// 		zip,
+		// 		files,
+		// 		layerOption,
+		// 		layer.name,
+		// 		processingLayer
+		// 	);
+		// }
+		// await Promise.all(processingLayer);
+		// resetLayerIndexes();
+		// document.querySelectorAll<HTMLElement>('.toggle-visibility').forEach((elem) => {
+		// 	elem.addEventListener('click', async function (event) {
+		// 		event.stopPropagation();
+		// 		toggleVisibility(elem);
+		// 	});
+		// });
+		// document.querySelectorAll('.toggle-options').forEach((elem) => {
+		// 	elem.addEventListener('click', async (event) => {
+		// 		event.stopPropagation();
+		// 		if (elem.getAttribute('checked') !== null) {
+		// 			return;
+		// 		}
+		// 		Notiflix.Loading.standard('<span id="processed-layers">Processing</span>');
+		// 		resetContainer();
+		// 		const forAttribute = elem.getAttribute('for');
+		// 		if (forAttribute) {
+		// 			await processZip(psdData, zip, files, forAttribute);
+		// 		}
+		// 		Notiflix.Loading.remove();
+		// 	});
+		// });
+		// initScaleValue();
+		// initSelectList();
+		// initScreen(psdData.width, psdData.height);
+		// exportImage('0', psdData.width, psdData.height);
+		// Notiflix.Loading.remove();
+		// if (psdData.missing_fonts) {
+		// 	for (const fonts of psdData.missing_fonts) {
+		// 		Toastify({
+		// 			text: `Missing font: '${fonts}.ttf'`,
+		// 			duration: 10000,
+		// 			position: 'right',
+		// 			style: {
+		// 				background: 'linear-gradient(to right, #ff5f6d, #ffc371)'
+		// 			}
+		// 		}).showToast();
+		// 	}
+		// }
 	};
 
 	//@ts-ignore
@@ -1484,31 +1433,31 @@
 	});
 
 	//@ts-ignore
-	window.electronAPI.onProcessPsdDone(async (value: any) => {
-		//@ts-ignore
-		uploadPSDInput.value = '';
+	// window.electronAPI.onProcessPsdDone(async (value: any) => {
+	// 	//@ts-ignore
+	// 	uploadPSDInput.value = '';
 
-		if (value.success) {
-			if (value.data) {
-				//@ts-ignore
-				await processZip(value.data);
-			} else {
-				Toastify({
-					text: value.message,
-					duration: 10000,
-					position: 'right',
-					style: {
-						background: 'linear-gradient(to right, #11998e, #38ef7d)'
-					}
-				}).showToast();
-			}
+	// 	if (value.success) {
+	// 		if (value.data) {
+	// 			//@ts-ignore
+	// 			await processZip(value.data);
+	// 		} else {
+	// 			Toastify({
+	// 				text: value.message,
+	// 				duration: 10000,
+	// 				position: 'right',
+	// 				style: {
+	// 					background: 'linear-gradient(to right, #11998e, #38ef7d)'
+	// 				}
+	// 			}).showToast();
+	// 		}
 
-			Notiflix.Loading.remove();
-		} else {
-			alert('Error: ' + value.message);
-			Notiflix.Loading.remove();
-		}
-	});
+	// 		Notiflix.Loading.remove();
+	// 	} else {
+	// 		alert('Error: ' + value.message);
+	// 		Notiflix.Loading.remove();
+	// 	}
+	// });
 
 	//@ts-ignore
 	window.electronAPI.onProcessing((data: { data: string }) => {
@@ -1554,11 +1503,20 @@
 		<div id="temp-container" class="hidden" />
 	</div> -->
 
-    <Canvas {checkFontInstalled}/>
-	<!-- <Sidebar {orderListElement} {stage} {konvaLayer} {resetContainer} {orderListContent} {createLayer}/> -->
+	<Canvas />
+	<Sidebar
+		bind:orderListElement
+		{stage}
+		{konvaLayer}
+		{resetContainer}
+		{createLayer}
+		{exportImage}
+		{processZip}
+		{uploadPSDInput}
+	/>
 	<!-- <Buttons /> -->
 
-	<div
+	<!-- <div
 		class="w-[25%] h-[100vh] bg-yellow-50 relative"
 		style="max-width: 25%; min-width: 25%;"
 		id="sidebar"
@@ -1593,7 +1551,7 @@
             "
 			/>
 		</div>
-	</div>
+	</div> -->
 
 	<input
 		type="range"
@@ -1689,7 +1647,7 @@
 	</select>
 </div>
 
-<style>
+<!-- <style>
 	#canvas-wrapper {
 		/* border: 1px solid black !important; */
 		background: url('https://i.imgur.com/Jo2gxXr.png');
@@ -1698,4 +1656,4 @@
 	li {
 		list-style: none;
 	}
-</style>
+</style> -->

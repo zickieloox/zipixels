@@ -6,35 +6,9 @@
     import { handleFileInput, handleExportImage, handleMergeSVGFilesInput, handleReset, handleUploadServer, handleDownloadSvg, handleZoomInput, handleTemplatesChange} from '../../main2';
 
     export let uploadPSDInput: HTMLElement;
-
-    export const processZip = async (psdData: any, zip: any, files: File, layerOption = '') => {}
-
-    //@ts-ignore
-	window.electronAPI.onProcessPsdDone(async (value: any) => {
-		//@ts-ignore
-		uploadPSDInput.value = '';
-
-		if (value.success) {
-			if (value.data) {
-				//@ts-ignore
-				await processZip(value.data);
-			} else {
-				Toastify({
-					text: value.message,
-					duration: 10000,
-					position: 'right',
-					style: {
-						background: 'linear-gradient(to right, #11998e, #38ef7d)'
-					}
-				}).showToast();
-			}
-
-			Notiflix.Loading.remove();
-		} else {
-			alert('Error: ' + value.message);
-			Notiflix.Loading.remove();
-		}
-	});
+    export let zoomElement: HTMLElement;
+    let templatesElement: HTMLElement;
+    let downloadSvgElement: HTMLElement;
 
   let fileName = '';
 	let fileSize = 0;
@@ -70,6 +44,7 @@
 		class="fixed top-[calc(100vh-40px)] right-[290px] hidden"
 		id="zoom"
     on:input={handleZoomInput}
+    bind:this={zoomElement}
 	/>
 
 	<label
@@ -124,6 +99,7 @@
 		class="fixed cursor-pointer top-4 border border-gray-300 p-2 bg-white rounded-md"
 		style="left: 41rem;"
     on:click={handleDownloadSvg}
+    bind:this={downloadSvgElement}
 	>
 		Download SVG
 	</button>
@@ -134,6 +110,7 @@
 		class="fixed cursor-pointer top-4 border border-gray-300 p-2 bg-white rounded-md"
 		style="left: 49rem; max-width: 165px;"
     on:change={handleTemplatesChange}
+    bind:this={templatesElement}
 	>
 		<option value="" selected>Select a template</option>
 	</select>

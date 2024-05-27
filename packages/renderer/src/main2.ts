@@ -137,9 +137,10 @@ export function handleExportImage(): void {
 }
 
 //
-export const handleMergeSVGFilesInput = async (e: Event) => {
-	const files = e.target.files;
-	if (files.length === 0) return;
+export const handleMergeSVGFilesInput = async (e: Event): Promise<void> => {
+	const target = e.target as HTMLInputElement;
+	const files = target.files;
+	if (files!.length === 0) return;
 
 	Notiflix.Confirm.prompt(
 		'Size of export image',
@@ -149,8 +150,8 @@ export const handleMergeSVGFilesInput = async (e: Event) => {
 		'Cancel',
 		(widthAndHeight) => {
 			const filePaths = [];
-			for (let i = 0; i < files.length; i++) {
-				filePaths.push(files[i].path);
+			for (let i = 0; i < files!.length; i++) {
+				filePaths.push(files![i].path);
 			}
 
 			const [width, height] = widthAndHeight.replace(' ', '').split('x');
