@@ -1,4 +1,4 @@
-import {spawn} from 'child_process';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {promises as fs} from 'fs';
 import {SVG, registerWindow} from '@svgdotjs/svg.js';
 import * as base64Img from 'base64-img';
@@ -25,6 +25,12 @@ interface Image {
   x?: number;
   y?: number;
   text?: string;
+}
+
+interface CompositeImage {
+  input: Buffer;
+  top: number;
+  left: number;
 }
 
 async function handleExportImage(event, data: string) {
@@ -70,9 +76,16 @@ async function handleExportImage(event, data: string) {
       checkOutputFolder(path.join('data', 'export'));
       const outputPromise: Promise<void>[] = [];
       const scale = Number(imageData.scale).toFixed(2) || 1;
-      outputPromise.push(createBackgroundImage(backgroundPaths, imageData.fileName, scale));
-      outputPromise.push(createSVGFiles(groupSvgPaths, imageData.fileName, scale));
-      outputPromise.push(createImageLayers(imageHashTag, imageData.fileName, texts, scale));
+
+      const validatedScale: number | undefined = typeof scale === 'number' ? scale : undefined;
+      outputPromise.push(
+        createBackgroundImage(backgroundPaths, imageData.fileName, validatedScale),
+      );
+
+      outputPromise.push(createSVGFiles(groupSvgPaths, imageData.fileName, validatedScale));
+      outputPromise.push(
+        createImageLayers(imageHashTag, imageData.fileName, texts, validatedScale),
+      );
 
       await Promise.all(outputPromise);
     } else {
@@ -108,7 +121,11 @@ async function createExportImage(screenShot: string) {
   return true;
 }
 
-async function createBackgroundImage(backgroundPaths: Image[], fileName: string, scale = 1) {
+async function createBackgroundImage(
+  backgroundPaths: Image[],
+  fileName: string,
+  scale: number | undefined = 1,
+) {
   const background = backgroundPaths[0];
 
   if (!background) return;
@@ -120,7 +137,7 @@ async function createBackgroundImage(backgroundPaths: Image[], fileName: string,
     const response = await axios.get(background.imagePath, {responseType: 'arraybuffer'});
     bufferData = Buffer.from(response.data, 'binary');
   } else {
-    const fileBase64Img = await fs.readFile(background.imagePath, 'base64');
+    const fileBase64Img = await fs.readFile(background.imagePath ?? '', 'base64');
     const bufferFrom = fileBase64Img.replace(`data:image/png;base64,`, '');
     bufferData = Buffer.from(bufferFrom, 'base64');
   }
@@ -138,7 +155,7 @@ async function createBackgroundImage(backgroundPaths: Image[], fileName: string,
 async function createSVGFiles(
   groupSvgPaths: {[key: string]: string[]},
   fileName: string,
-  scale = 1,
+  scale: number | undefined = 1,
 ) {
   for (const layerHastag in groupSvgPaths) {
     const svgPaths = groupSvgPaths[layerHastag] || [];
@@ -161,14 +178,16 @@ async function createSVGFiles(
 
         canvas.clear();
         canvas.svg(svgString);
-        const viewBox = document.querySelector('svg').childNodes[0].getAttribute('viewBox');
+        //@ts-ignore
+        const viewBox = document.querySelector('svg')?.childNodes[0].getAttribute('viewBox');
         const rasterImage = document.querySelector(`path`);
         svg.viewbox(viewBox);
+        //@ts-ignore
         svg.add(rasterImage);
 
         if (scale !== 1) {
-          const currentTransform = rasterImage.getAttribute('transform') || '';
-          rasterImage.setAttribute('transform', `${currentTransform} scale(${scale})`);
+          const currentTransform = (rasterImage as Element).getAttribute('transform') || '';
+          (rasterImage as Element).setAttribute('transform', `${currentTransform} scale(${scale})`);
           const [x, y, width, height] = viewBox.split(' ');
           svg.viewbox([x, y, width * scale, height * scale].join(' '));
         }
@@ -186,12 +205,12 @@ async function createImageLayers(
   imageHashTags: {[key: string]: Image[]},
   fileName: string,
   texts: Image[],
-  scale = 1,
+  scale: number | undefined = 1,
 ) {
   for (const imageHashTag in imageHashTags) {
     const outputPath = `data/export/${fileName.replace('.png', '')}-#${imageHashTag || 'image'}`;
     const images = imageHashTags[imageHashTag];
-    const compositeImages = [];
+    const compositeImages: CompositeImage[] = [];
     let maxWidth = 0;
     let maxHeight = 0;
     let minX = Infinity;
@@ -199,17 +218,23 @@ async function createImageLayers(
 
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
-      maxWidth = Math.max(maxWidth, Math.round(image.width * image.scaleX * scale + image.x));
-      maxHeight = Math.max(maxHeight, Math.round(image.height * image.scaleY * scale + image.y));
-      minX = Math.min(minX, Math.round(image.x));
-      minY = Math.min(minY, Math.round(image.y));
+      maxWidth = Math.max(
+        maxWidth,
+        Math.round((image.width ?? 0) * (image.scaleX ?? 1) * scale + (image.x ?? 0)),
+      );
+      maxHeight = Math.max(
+        maxHeight,
+        Math.round(image.height * (image.scaleY ?? 1) * scale + (image.y ?? 0)),
+      );
+      minX = Math.min(minX, Math.round(image.x ?? 0));
+      minY = Math.min(minY, Math.round(image.y ?? 0));
     }
 
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
       let sharpImage;
-      if (image.imagePath.startsWith('https://')) {
-        const response = await axios.get(image.imagePath, {responseType: 'arraybuffer'});
+      if ((image.imagePath ?? '').toString().startsWith('https://')) {
+        const response = await axios.get(image.imagePath ?? '', {responseType: 'arraybuffer'});
         sharpImage = sharp(Buffer.from(response.data, 'binary'));
       } else {
         sharpImage = sharp(image.imagePath);
@@ -218,20 +243,20 @@ async function createImageLayers(
       compositeImages.push({
         input: await sharpImage
           .resize({
-            width: Math.round(image.width * image.scaleX * scale),
-            height: Math.round(image.height * image.scaleY * scale),
+            width: Math.round(image.width * (image.scaleX ?? 0) * scale),
+            height: Math.round(image.height * (image.scaleY ?? 0) * scale),
           })
           .toBuffer(),
-        top: Math.round(image.y) - minY,
-        left: Math.round(image.x) - minX,
+        top: Math.round(image.y ?? 0) - minY,
+        left: Math.round(image.x ?? 0) - minX,
       });
     }
 
-    const compositeTexts: any[] = [];
+    const compositeTexts = [];
     for (let i = 0; i < texts.length; i++) {
       const textData = texts[i];
       const bufferData = Buffer.from(
-        textData.imagePath.replace(`data:image/png;base64,`, ''),
+        textData.imagePath ?? ''.replace(`data:image/png;base64,`, ''),
         'base64',
       );
 
@@ -241,12 +266,12 @@ async function createImageLayers(
       compositeImages.push({
         input: await sharp(bufferData)
           .resize({
-            width: Math.round(textData.width * textData.scaleX),
-            height: Math.round(textData.height * textData.scaleY),
+            width: Math.round(textData.width * (textData.scaleX ?? 0)),
+            height: Math.round(textData.height * (textData.scaleY ?? 0)),
           })
           .toBuffer(),
-        top: Math.round(textData.y * scale) - minY,
-        left: Math.round(textData.x * scale) - minX,
+        top: Math.round((textData.y ?? 0) * scale) - minY,
+        left: Math.round((textData.x ?? 0) * scale) - minX,
       });
     }
 
@@ -275,8 +300,8 @@ function getInnerLayer(imageData: ImageData) {
       continue;
     }
 
-    x = Math.min(x, image.x);
-    y = Math.min(y, image.y);
+    x = Math.min(x, image.x !== undefined ? image.x : Infinity);
+    y = Math.min(y, image.y !== undefined ? image.y : Infinity);
     width = Math.max(width, image.width);
     height = Math.max(height, image.height);
   }

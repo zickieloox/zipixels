@@ -56,7 +56,7 @@ async function handleUploadToServer(event, fileName: string, fileSize: number): 
     // * Upload Preview
     const currentTime = new Date().toLocaleDateString('en-ZA');
     const previewImagePath = path.join('data', 'output', 'export_image.png');
-    let previewPublicURL = '';
+    let _previewPublicURL = '';
     if (await readFile(previewImagePath)) {
       const previewFile = await readFile(path.join(previewImagePath));
       const previewWebp = await sharp(previewFile).webp().toBuffer();
@@ -72,7 +72,7 @@ async function handleUploadToServer(event, fileName: string, fileSize: number): 
         Key: previewKey,
         ContentType: `image/webp`,
       });
-      previewPublicURL = `${dns}/${encodeURI(previewKey)}`;
+      _previewPublicURL = `${dns}/${encodeURI(previewKey)}`;
       images.push({
         bucket: previewBucket,
         key: previewKey,
@@ -80,7 +80,7 @@ async function handleUploadToServer(event, fileName: string, fileSize: number): 
     }
 
     // * Upload Zip
-    let zipPublicURL = '';
+    let _zipPublicURL = '';
     const uploadZip = false;
     if (uploadZip && zipPath && (await readFile(zipPath))) {
       const zipFile = await readFile(zipPath);
@@ -94,7 +94,7 @@ async function handleUploadToServer(event, fileName: string, fileSize: number): 
         Key: zipKey,
         ContentType: `application/zip`,
       });
-      zipPublicURL = `${dns}/${encodeURI(zipKey)}`;
+      _zipPublicURL = `${dns}/${encodeURI(zipKey)}`;
       images.push({
         bucket: zipBucket,
         key: zipKey,
@@ -266,7 +266,7 @@ const processChildren = async (children, uploadedFiles = [], uploadedImages) => 
     }
 
     if (child.children) {
-      await processChildren(child.children, uploadedFiles);
+      await processChildren(child.children, uploadedFiles, uploadedImages);
     }
   }
 };

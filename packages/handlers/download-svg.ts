@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {SVG, registerWindow} from '@svgdotjs/svg.js';
 import * as base64Img from 'base64-img';
 import axios from 'axios';
@@ -70,12 +71,14 @@ const createSVGFile = async (psdData: PSDData, outputFolder = 'data/download') =
         if (!child) return;
 
         if (child.kind === 'type' && child.text_data) {
+          //@ts-ignore
           const newTextElement = svg.text().plain(child.text_data.text);
           const translateX = child.translateX || child.x || 0;
           const translateY = child.translateY || child.y || 0;
 
           newTextElement.attr(
             'style',
+            //@ts-expect-error
             `font-family:${child.text_data.font_name.replaceAll('"', "'")};font-size:${
               child.text_data.font_size
             }px`,

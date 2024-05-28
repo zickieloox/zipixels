@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {SVG, registerWindow} from '@svgdotjs/svg.js';
 import base64Img from 'base64-img';
 import sharp from 'sharp';
@@ -33,6 +34,7 @@ type SvgLayer = {
   skewX?: null | number;
   translateX?: number;
   translateY?: number;
+  rotate?: null | number;
 };
 
 // Optimize and minify svg which using Adobe Illustrator Save as with "Preserve Illustrator Editing Capabilities"
@@ -239,6 +241,8 @@ const createImageAndThumbnail = async (
     } else if (typeof base64Data === 'string' && base64Data.includes('.png')) {
       const folderSlash = filePath.includes('/') ? '/' : '\\';
       const folderPath = filePath.split(folderSlash).slice(0, -1).join(folderSlash);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const imagePath = `${folderPath}${folderSlash}${base64Data.replaceAll('%20', ' ')}`;
       const image = sharp(imagePath);
       await Promise.all([
@@ -308,8 +312,10 @@ const itemSvgStringFromPath = (pathData, viewBox, outputPath, rawOutputPath = ''
   if (outputPath.toLowerCase().includes('vector')) {
     const path = svg.findOne('path');
     if (path) {
-      path.stroke('red');
-      path.fill('none');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (path as any).stroke('red');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (path as any).fill('none');
     }
   }
 
@@ -435,8 +441,9 @@ const extractSvg = async (filePath, outputFolder) => {
   canvas.svg(optimizedSvgString);
   const layers: SvgLayer[] = [];
   const style = document.querySelector('style');
-  const viewBox = document.querySelector('svg')?.childNodes[0].getAttribute('viewBox');
+  const viewBox = (document.querySelector('svg')?.childNodes[0] as Element).getAttribute('viewBox');
   let styleObj =
+    //@ts-ignore
     style && style.childNodes[0] ? convertStringCssToObject(style.childNodes[0].data) : null;
   const groups = document.querySelectorAll('g');
   const createImagePromises: Promise<void>[] = [];
@@ -448,7 +455,7 @@ const extractSvg = async (filePath, outputFolder) => {
       if (!group.id) {
         continue;
       }
-      const layerId = layer.id || randomString(8);
+      const layerId = (layer as Element).id || randomString(8);
       let rasterImage: Element | ChildNode | null = document.querySelector(`#${layerId}`);
 
       if (!rasterImage && layer.nodeValue && `${layer.nodeValue}`.includes('\n')) {
@@ -494,8 +501,8 @@ const extractSvg = async (filePath, outputFolder) => {
         imageFormat = 'svg+xml';
         width = svgWidth;
         height = svgHeight;
-        x = svgX;
-        y = svgY;
+        x = Number(svgX);
+        y = Number(svgY);
 
         if (backgroundTranslateX !== Infinity) x += backgroundTranslateX;
         if (backgroundTranslateY !== Infinity) y += backgroundTranslateY;
@@ -507,11 +514,11 @@ const extractSvg = async (filePath, outputFolder) => {
         } else {
           imageFormat = (base64Data.match(/^data:image\/(\w+);base64,/) || [])[1];
         }
-        const rect = rasterImage?.getBoundingClientRect();
-        width = rasterImage?.getAttribute('width');
+        const rect = (rasterImage as Element)?.getBoundingClientRect();
+        width = (rasterImage as Element)?.getAttribute('width');
         y = rect?.y || 0;
         x = rect?.x || 0;
-        height = rasterImage?.getAttribute('height');
+        height = (rasterImage as Element)?.getAttribute('height');
 
         if (layerId.toLocaleLowerCase().includes('background')) {
           backgroundTranslateX = Math.min(backgroundTranslateX, x);
@@ -519,8 +526,10 @@ const extractSvg = async (filePath, outputFolder) => {
         }
       }
 
-      const classOfLayer = layer.attrs;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const classOfLayer = (layer as any).attrs;
       const classArray = [...classOfLayer];
+
       // const classes = classArray.find(attr => attr.nodeName === 'class');
       const styles = classArray.find(attr => attr.nodeName === 'style');
 
@@ -649,11 +658,12 @@ const extractSvg = async (filePath, outputFolder) => {
     }
 
     if (groupName.toLowerCase().includes('text') && !groupName.toLowerCase().includes('x2a_path')) {
-      const texts = group.querySelectorAll('text');
+      const texts: NodeListOf<SVGTextElement> = group.querySelectorAll('text');
       for (const textElement of texts) {
         const layerId = textElement.id || randomString(8);
         const layerName = textElement?.getAttribute('data-name')?.split('-')[0] || '';
 
+        //@ts-ignore
         const classOfLayer = textElement.attrs;
         const classArray = [...classOfLayer];
         const classes = classArray.find(attr => attr.nodeName === 'class');
@@ -664,6 +674,7 @@ const extractSvg = async (filePath, outputFolder) => {
         }
 
         const classStyleObj =
+          //@ts-ignore
           style && style.childNodes[0] ? convertStringCssToObject(style.childNodes[0].data) : null;
         const transforms = classArray.find(attr => attr.nodeName === 'transform');
         const x = 0,
@@ -721,7 +732,7 @@ const extractSvg = async (filePath, outputFolder) => {
           }
         }
 
-        const textValue = textElement?.childNodes
+        const textValue = Array.from(textElement?.childNodes || [])
           .map(node => node?.nodeValue || node?.childNodes?.[0]?.nodeValue || '')
           .join('')
           .trim();
@@ -760,6 +771,8 @@ const extractSvg = async (filePath, outputFolder) => {
           translateX: translateX,
           translateY: translateY,
           rotate: rotate ? Number(rotate) : null,
+          layerId: 'unknown',
+          crop_image_path: null,
         });
       }
     }
@@ -769,7 +782,7 @@ const extractSvg = async (filePath, outputFolder) => {
       const textElement = group.querySelector('text');
       const tspanElement = group.querySelector('tspan');
 
-      const font_size: any = tspanElement?.style.fontSize.replace('px', '');
+      const font_size = tspanElement?.style.fontSize.replace('px', '');
       const fill_color = pathElement?.style.fill == 'none' ? '#000000' : pathElement?.style.fill;
 
       const rect = textElement?.getBoundingClientRect();
@@ -799,7 +812,7 @@ const extractSvg = async (filePath, outputFolder) => {
         width: Number(widthOfText),
         height: Number(heightOfText),
         x: x,
-        y: y - (font_size * 0.5 || 0),
+        y: y - (Number(font_size) * 0.5 || 0),
         children: null,
         is_group: false,
         image_path: null,
@@ -824,6 +837,8 @@ const extractSvg = async (filePath, outputFolder) => {
         translateX: 0,
         translateY: 0,
         rotate: rotate ? Number(rotate) : null,
+        crop_image_path: null,
+        layerId: 'unknown',
       });
     }
 

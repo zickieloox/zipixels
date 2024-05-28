@@ -3,6 +3,7 @@
 	import Buttons from './components/Buttons.svelte';
 	import '../app.css';
 	import 'notiflix/dist/notiflix-3.2.6.min.css';
+  import 'toastify-js/src/toastify.css';
 	import Notiflix from 'notiflix';
 	import Toastify from 'toastify-js';
 	import { nanoid } from 'nanoid';

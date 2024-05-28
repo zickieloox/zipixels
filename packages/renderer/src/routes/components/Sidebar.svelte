@@ -2,12 +2,13 @@
 	import { handleCustomFont } from '../../main2';
 	import { onMount } from 'svelte';
 	import Konva from 'konva';
-  import { isInViewport, createImageElementFromUrl } from '../../utils';
-  import { fontStore } from '../stores';
-  import { nanoid } from 'nanoid';
-  import Notiflix from 'notiflix';
-  import Toastify from 'toastify-js';
-  import type { Text } from 'konva/lib/shapes/Text';
+	import { isInViewport, createImageElementFromUrl } from '../../utils';
+	import { fontStore } from '../stores';
+	import { nanoid } from 'nanoid';
+  import 'toastify-js/src/toastify.css';
+	import Notiflix from 'notiflix';
+	import Toastify from 'toastify-js';
+	import type { Text } from 'konva/lib/shapes/Text';
 	import type { TextPath } from 'konva/lib/shapes/TextPath';
 	import type { Path } from 'konva/lib/shapes/Path';
 	import type { LayerConfig } from 'konva/lib/Layer';
@@ -35,11 +36,11 @@
 	let copyLayer: { [key: string]: any } = {};
 	let copyElements: any[] = [];
 
-  let initTextPathFontSize: number[] = [];
-  let textPathnum = -1;
+	let initTextPathFontSize: number[] = [];
+	let textPathnum = -1;
 
-  // export let zoomElement: HTMLElement;
-  export let uploadPSDInput: HTMLElement;
+	// export let zoomElement: HTMLElement;
+	export let uploadPSDInput: HTMLElement;
 
 	export let stage: Konva.Stage;
 	let tempStage: Konva.Stage;
@@ -136,15 +137,13 @@
 		// currentScale = 1;
 		// copyLayer = {};
 		// copyElements = [];
-
 		// stage.scale({ x: MIN_SCALE, y: MIN_SCALE });
 		// stage.position({ x: 0, y: 0 });
-
 		// konvaLayer.destroyChildren();
 		// konvaLayer.clear();
 	};
 
-  const handleHtmlLayerClick = (orderId: string, imageId: string, element: HTMLElement) => {
+	const handleHtmlLayerClick = (orderId: string, imageId: string, element: HTMLElement) => {
 		if (!orderId.startsWith('#')) return;
 
 		const konvaLayer = stage.findOne('#' + imageId);
@@ -161,7 +160,7 @@
 		}
 	};
 
-  const splitGroupName = (groupName: string): [string, string, string, string, string] => {
+	const splitGroupName = (groupName: string): [string, string, string, string, string] => {
 		const str: string = groupName.toLowerCase().replace('choose', '');
 		const parts: string[] = [];
 
@@ -204,7 +203,7 @@
 		return [name, hashtag, atSign, vector, size];
 	};
 
-  const handleHtmlLayerInputChange = (
+	const handleHtmlLayerInputChange = (
 		imageId: string,
 		inputText: string,
 		standardSize = 20,
@@ -248,7 +247,7 @@
 		}
 	};
 
-  const triggerCopyLayer = () => {
+	const triggerCopyLayer = () => {
 		if (!copyLayer || !copyLayer.x) return;
 
 		const orderListElements = document.querySelectorAll<HTMLImageElement>(
@@ -295,224 +294,224 @@
 		});
 	};
 
-  async function createKonvaText(
-	layer: any,
-	imageId: string,
-	groupName: string,
-	defaultShowText: boolean,
-	hashtagPart: boolean | string
-) {
-	const fontName = layer.text_data.font_name
-		.replaceAll("'", '')
-		.split('-')[0]
-		.replace(/([a-z])([A-Z])/g, '$1 $2');
+	async function createKonvaText(
+		layer: any,
+		imageId: string,
+		groupName: string,
+		defaultShowText: boolean,
+		hashtagPart: boolean | string
+	) {
+		const fontName = layer.text_data.font_name
+			.replaceAll("'", '')
+			.split('-')[0]
+			.replace(/([a-z])([A-Z])/g, '$1 $2');
 
-	// const fontAvailable = await checkFontInstalled(`${fontName}`);
+		// const fontAvailable = await checkFontInstalled(`${fontName}`);
 
-	// if (!fontAvailable) {
-	// 	Toastify({
-	// 		text: `Missing font: ${fontName}`,
-	// 		duration: 10000,
-	// 		position: 'right',
-	// 		style: {
-	// 			background: 'linear-gradient(to right, #ff5f6d, #ffc371)'
-	// 		}
-	// 	}).showToast();
-	// }
+		// if (!fontAvailable) {
+		// 	Toastify({
+		// 		text: `Missing font: ${fontName}`,
+		// 		duration: 10000,
+		// 		position: 'right',
+		// 		style: {
+		// 			background: 'linear-gradient(to right, #ff5f6d, #ffc371)'
+		// 		}
+		// 	}).showToast();
+		// }
 
-	const radians = (layer.rotate * Math.PI) / 180;
-	const justifyX = Number((Math.sin(radians) * 1.2 * layer.text_data.font_size).toFixed(2));
-	const justifyY = Number((Math.cos(radians) * 1.2 * layer.text_data.font_size).toFixed(2)) * -1;
+		const radians = (layer.rotate * Math.PI) / 180;
+		const justifyX = Number((Math.sin(radians) * 1.2 * layer.text_data.font_size).toFixed(2));
+		const justifyY = Number((Math.cos(radians) * 1.2 * layer.text_data.font_size).toFixed(2)) * -1;
 
-	const konvaText = new Konva.Text({
-		x: layer.x + justifyX,
-		y: layer.y + justifyY,
-		text: defaultShowText ? layer.text_data.text.replaceAll('.', '') : '',
-		stroke: layer.text_data.stroke_color,
-		strokeWidth: layer.text_data.stroke_width,
-		name: layer.name,
-		layerHastag: hashtagPart,
-		groupName: groupName,
-		width: layer.width,
-		height: layer.height,
-		fontSize: layer.text_data.font_size,
-		fontPath: layer.text_data.font_path,
-		fontFamily: fontName,
-		fill: layer.text_data.fill_color,
-		align: 'center',
-		verticalAlign: layer.rotate >= 90 ? 'middle' : 'bottom',
-		wrap: 'none',
-		scaleX: layer.scaleX || null,
-		skewY: layer.skewY || null,
-		skewX: layer.skewX || null,
-		scaleY: layer.scaleY || null
-	});
-
-	if (layer.rotate) {
-		konvaText.rotate(layer.rotate);
-	}
-
-	konvaText.id(imageId);
-	konvaLayer!.add(konvaText);
-
-	// Type layers are always on top
-	if (layerZIndexMap[1000]) {
-		layerZIndexMap[1000].push(imageId);
-	} else {
-		layerZIndexMap[1000] = [imageId];
-	}
-}
-
-const createKonvaTextPath = async (
-	layer: any,
-	imageId: string,
-	groupName: string,
-	defaultShowText: boolean,
-	hashtagPart: boolean | string
-) => {
-	const fontName = layer.text_data.font_name
-		.replaceAll("'", '')
-		.split('-')[0]
-		.replace(/([a-z])([A-Z])/g, '$1 $2');
-
-	// const fontAvailable = await checkFontInstalled(`${fontName}`);
-
-	// if (!fontAvailable) {
-	// 	Toastify({
-	// 		text: `Missing font: ${fontName}`,
-	// 		duration: 10000,
-	// 		position: 'right',
-	// 		style: {
-	// 			background: 'linear-gradient(to right, #ff5f6d, #ffc371)'
-	// 		}
-	// 	}).showToast();
-	// }
-	const path = new Konva.Path({
-		data: layer.text_data.text_path
-	});
-
-	const konvaTextPath = new Konva.TextPath({
-		x: layer.x,
-		y: layer.y,
-		fill: layer.text_data.fill_color,
-		fontSize: layer.text_data.font_size,
-		fontFamily: layer.text_data.font_name,
-		text: layer.text_data.text,
-		stroke: layer.text_data.stroke_color,
-		strokeWidth: layer.text_data.stroke_width,
-		align: 'center',
-		data: layer.text_data.text_path
-	});
-
-	if (layer.rotate) {
-		konvaTextPath.rotate(layer.rotate);
-	}
-
-	initTextPathFontSize.push(layer.text_data.font_size);
-
-	path.id(imageId + 'path');
-	konvaTextPath.id(imageId);
-	konvaLayer!.add(path);
-	konvaLayer!.add(konvaTextPath);
-
-	// Type layers are always on top
-	if (layerZIndexMap[1000]) {
-		layerZIndexMap[1000].push(imageId);
-	} else {
-		layerZIndexMap[1000] = [imageId];
-	}
-};
-
-const getImageUrl = async (
-	layer: { thumb_image_path?: string; image_path: string },
-	zip: any,
-	files: FileList | null
-): Promise<string | undefined> => {
-	if (!zip && !files) return layer.thumb_image_path || layer.image_path;
-
-	const imagePaths = layer.image_path.replaceAll('\\', '/').split('/');
-
-	if (zip) {
-		const imagePath = [imagePaths[imagePaths.length - 2], imagePaths[imagePaths.length - 1]].join(
-			'/'
-		);
-
-		const imageBlob = await zip.file(imagePath).async('base64');
-		return 'data:image/png;base64,' + imageBlob;
-	} else if (files) {
-		const imagePath = imagePaths[imagePaths.length - 1];
-
-		const file = Array.from(files).find((file) => file.name === imagePath);
-
-		if (file) return URL.createObjectURL(file);
-	}
-};
-
-const createKonvaLayer = async (
-	layer: any,
-	zip: any,
-	files: FileList | any,
-	imageId: string,
-	groupName: string,
-	hashtagPart: boolean | string
-) => {
-	const imageUrl: any = await getImageUrl(layer, zip, files);
-
-	const imageElement: any = await createImageElementFromUrl(imageUrl);
-
-	const konvaImage = new Konva.Image({
-		x: layer.x, // + (layer.translateX || 0),
-		y: layer.y, //+ (layer.translateY || 0),
-		image: imageElement,
-		width: layer.width,
-		height: layer.height,
-		name: layer.name,
-		layerHastag: hashtagPart,
-		groupName: groupName,
-		imagePath: layer?.image_path?.includes('https://') ? layer.image_path : layer.raw_image_path,
-		svgPath: layer?.svg_path,
-		scaleX: layer.scaleX || null,
-		skewY: layer.skewY || null,
-		skewX: layer.skewX || null,
-		scaleY: layer.scaleY || null
-	});
-
-	// if (layer.rotate) {
-	//   konvaImage.rotate(layer.rotate);
-	// }
-
-	konvaImage.id(imageId);
-
-	imageElement?.remove();
-
-	if (layer.name.startsWith('#')) {
-		konvaImage.addEventListener('click', async () => {
-      //@ts-ignore
-			document.querySelector('#' + imageId)!.click();
+		const konvaText = new Konva.Text({
+			x: layer.x + justifyX,
+			y: layer.y + justifyY,
+			text: defaultShowText ? layer.text_data.text.replaceAll('.', '') : '',
+			stroke: layer.text_data.stroke_color,
+			strokeWidth: layer.text_data.stroke_width,
+			name: layer.name,
+			layerHastag: hashtagPart,
+			groupName: groupName,
+			width: layer.width,
+			height: layer.height,
+			fontSize: layer.text_data.font_size,
+			fontPath: layer.text_data.font_path,
+			fontFamily: fontName,
+			fill: layer.text_data.fill_color,
+			align: 'center',
+			verticalAlign: layer.rotate >= 90 ? 'middle' : 'bottom',
+			wrap: 'none',
+			scaleX: layer.scaleX || null,
+			skewY: layer.skewY || null,
+			skewX: layer.skewX || null,
+			scaleY: layer.scaleY || null
 		});
+
+		if (layer.rotate) {
+			konvaText.rotate(layer.rotate);
+		}
+
+		konvaText.id(imageId);
+		konvaLayer!.add(konvaText);
+
+		// Type layers are always on top
+		if (layerZIndexMap[1000]) {
+			layerZIndexMap[1000].push(imageId);
+		} else {
+			layerZIndexMap[1000] = [imageId];
+		}
 	}
 
-	konvaLayer!.add(konvaImage);
+	const createKonvaTextPath = async (
+		layer: any,
+		imageId: string,
+		groupName: string,
+		defaultShowText: boolean,
+		hashtagPart: boolean | string
+	) => {
+		const fontName = layer.text_data.font_name
+			.replaceAll("'", '')
+			.split('-')[0]
+			.replace(/([a-z])([A-Z])/g, '$1 $2');
 
-	if (layerZIndexMap[String(layer.z_index)]) {
-		layerZIndexMap[String(layer.z_index)].push(imageId);
-	} else {
-		layerZIndexMap[String(layer.z_index)] = [imageId];
-	}
-};
+		// const fontAvailable = await checkFontInstalled(`${fontName}`);
 
-const createCopyLayer = async (layer: any) => {
-	const base = layer.children.find((child: any) => child.name.toLowerCase().includes('base'));
-	const copy = layer.children.find((child: any) => child.name.toLowerCase().includes('copy'));
+		// if (!fontAvailable) {
+		// 	Toastify({
+		// 		text: `Missing font: ${fontName}`,
+		// 		duration: 10000,
+		// 		position: 'right',
+		// 		style: {
+		// 			background: 'linear-gradient(to right, #ff5f6d, #ffc371)'
+		// 		}
+		// 	}).showToast();
+		// }
+		const path = new Konva.Path({
+			data: layer.text_data.text_path
+		});
 
-	copyLayer = {
-		...copyLayer,
-		x: (copy?.x || 0) - (base?.x || 0),
-		y: (copy?.y || 0) - (base?.y || 0)
+		const konvaTextPath = new Konva.TextPath({
+			x: layer.x,
+			y: layer.y,
+			fill: layer.text_data.fill_color,
+			fontSize: layer.text_data.font_size,
+			fontFamily: layer.text_data.font_name,
+			text: layer.text_data.text,
+			stroke: layer.text_data.stroke_color,
+			strokeWidth: layer.text_data.stroke_width,
+			align: 'center',
+			data: layer.text_data.text_path
+		});
+
+		if (layer.rotate) {
+			konvaTextPath.rotate(layer.rotate);
+		}
+
+		initTextPathFontSize.push(layer.text_data.font_size);
+
+		path.id(imageId + 'path');
+		konvaTextPath.id(imageId);
+		konvaLayer!.add(path);
+		konvaLayer!.add(konvaTextPath);
+
+		// Type layers are always on top
+		if (layerZIndexMap[1000]) {
+			layerZIndexMap[1000].push(imageId);
+		} else {
+			layerZIndexMap[1000] = [imageId];
+		}
 	};
-};
 
-  interface Layer {
+	const getImageUrl = async (
+		layer: { thumb_image_path?: string; image_path: string },
+		zip: any,
+		files: FileList | null
+	): Promise<string | undefined> => {
+		if (!zip && !files) return layer.thumb_image_path || layer.image_path;
+
+		const imagePaths = layer.image_path.replaceAll('\\', '/').split('/');
+
+		if (zip) {
+			const imagePath = [imagePaths[imagePaths.length - 2], imagePaths[imagePaths.length - 1]].join(
+				'/'
+			);
+
+			const imageBlob = await zip.file(imagePath).async('base64');
+			return 'data:image/png;base64,' + imageBlob;
+		} else if (files) {
+			const imagePath = imagePaths[imagePaths.length - 1];
+
+			const file = Array.from(files).find((file) => file.name === imagePath);
+
+			if (file) return URL.createObjectURL(file);
+		}
+	};
+
+	const createKonvaLayer = async (
+		layer: any,
+		zip: any,
+		files: FileList | any,
+		imageId: string,
+		groupName: string,
+		hashtagPart: boolean | string
+	) => {
+		const imageUrl: any = await getImageUrl(layer, zip, files);
+
+		const imageElement: any = await createImageElementFromUrl(imageUrl);
+
+		const konvaImage = new Konva.Image({
+			x: layer.x, // + (layer.translateX || 0),
+			y: layer.y, //+ (layer.translateY || 0),
+			image: imageElement,
+			width: layer.width,
+			height: layer.height,
+			name: layer.name,
+			layerHastag: hashtagPart,
+			groupName: groupName,
+			imagePath: layer?.image_path?.includes('https://') ? layer.image_path : layer.raw_image_path,
+			svgPath: layer?.svg_path,
+			scaleX: layer.scaleX || null,
+			skewY: layer.skewY || null,
+			skewX: layer.skewX || null,
+			scaleY: layer.scaleY || null
+		});
+
+		// if (layer.rotate) {
+		//   konvaImage.rotate(layer.rotate);
+		// }
+
+		konvaImage.id(imageId);
+
+		imageElement?.remove();
+
+		if (layer.name.startsWith('#')) {
+			konvaImage.addEventListener('click', async () => {
+				//@ts-ignore
+				document.querySelector('#' + imageId)!.click();
+			});
+		}
+
+		konvaLayer!.add(konvaImage);
+
+		if (layerZIndexMap[String(layer.z_index)]) {
+			layerZIndexMap[String(layer.z_index)].push(imageId);
+		} else {
+			layerZIndexMap[String(layer.z_index)] = [imageId];
+		}
+	};
+
+	const createCopyLayer = async (layer: any) => {
+		const base = layer.children.find((child: any) => child.name.toLowerCase().includes('base'));
+		const copy = layer.children.find((child: any) => child.name.toLowerCase().includes('copy'));
+
+		copyLayer = {
+			...copyLayer,
+			x: (copy?.x || 0) - (base?.x || 0),
+			y: (copy?.y || 0) - (base?.y || 0)
+		};
+	};
+
+	interface Layer {
 		name: string;
 		kind: string;
 		text_data?: any;
@@ -538,8 +537,8 @@ const createCopyLayer = async (layer: any) => {
 	) => {
 		if (!layer || layer.name.toLowerCase().includes('frame')) return;
 		if (layer.name.toLowerCase().includes('copy')) {
-      createCopyLayer(layer);
-      return;
+			createCopyLayer(layer);
+			return;
 		}
 
 		if (level === undefined) level = -1;
@@ -559,7 +558,6 @@ const createCopyLayer = async (layer: any) => {
 		} else if (layer.image_path && namePart.toLowerCase() !== 'size') {
 			processingLayer.push(createKonvaLayer(layer, zip, files, imageId, namePart, hashtagPart));
 		}
-
 
 		if (layer.children && layer.children.length > 0) {
 			const createdAt = new Date().getTime().toString();
@@ -747,7 +745,7 @@ const createCopyLayer = async (layer: any) => {
 		}
 	};
 
-  const layerCustomSort = (
+	const layerCustomSort = (
 		a: { name: string; z_index?: number },
 		b: { name: string; z_index?: number }
 	): number => {
@@ -773,7 +771,7 @@ const createCopyLayer = async (layer: any) => {
 		return indexA - indexB;
 	};
 
-  const validatePSDLayer = (element: any, isNestedError: boolean) => {
+	const validatePSDLayer = (element: any, isNestedError: boolean) => {
 		if (!element) return false;
 		if (element.children !== null && element.children.length > 0) {
 			if (element.name.startsWith('#')) {
@@ -804,7 +802,7 @@ const createCopyLayer = async (layer: any) => {
 		return true;
 	};
 
-  const resetLayerIndexes = () => {
+	const resetLayerIndexes = () => {
 		const zIndexes = Object.keys(layerZIndexMap).sort((a, b) => {
 			return Number(a) - Number(b);
 		});
@@ -828,7 +826,7 @@ const createCopyLayer = async (layer: any) => {
 		});
 	};
 
-  const toggleVisibility = (elem: HTMLElement | null, triggerCopy = true) => {
+	const toggleVisibility = (elem: HTMLElement | null, triggerCopy = true) => {
 		if (!elem || !elem.parentElement) return;
 
 		if (elem.classList.contains('border-amber-600')) {
@@ -932,7 +930,7 @@ const createCopyLayer = async (layer: any) => {
 		}
 	};
 
-  const initSelectList = () => {
+	const initSelectList = () => {
 		const chooseElements = document.querySelectorAll('#order-list div > ul');
 		chooseElements.forEach((elem) => {
 			// No toggle hight level ul
@@ -966,7 +964,7 @@ const createCopyLayer = async (layer: any) => {
 		stage.scale({ x: scale, y: scale });
 	};
 
-  export const exportImage = (outputFileName = '', width = null, height = null) => {
+	export const exportImage = (outputFileName = '', width = null, height = null) => {
 		const orderListElements: any = document.querySelectorAll(
 			'#order-list div ul li img[data-is-visible="1"]'
 		);
@@ -1065,8 +1063,7 @@ const createCopyLayer = async (layer: any) => {
 		window.electronAPI.exportImage(exportData);
 	};
 
-
-  export const processZip = async (psdData: any, zip: any, files: File, layerOption = '') => {
+	export const processZip = async (psdData: any, zip: any, files: File, layerOption = '') => {
 		if (!validatePsd(psdData)) {
 			alert("Can't nested #");
 
@@ -1140,8 +1137,8 @@ const createCopyLayer = async (layer: any) => {
 		}
 	};
 
-  //@ts-ignore
-  window.electronAPI.onProcessPsdDone(async (value: any) => {
+	//@ts-ignore
+	window.electronAPI.onProcessPsdDone(async (value: any) => {
 		//@ts-ignore
 		uploadPSDInput.value = '';
 

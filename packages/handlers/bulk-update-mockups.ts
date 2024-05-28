@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {spawn} from 'child_process';
 import * as fs from 'fs';
 import * as FormData from 'form-data';
@@ -29,6 +30,7 @@ async function handleBulkUpdateMockups(event, filePath: string): Promise<void> {
 
       const formData = new FormData();
       flattenedItems.forEach(item => {
+        //@ts-ignore
         const fileStream = fs.createReadStream(item.image_path);
         formData.append(`files`, fileStream, {
           filename: item.name.replace('#', ''),

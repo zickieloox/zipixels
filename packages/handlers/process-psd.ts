@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {spawn} from 'child_process';
 import {promises as fs} from 'fs';
 import JSZip from 'jszip';
@@ -96,6 +97,7 @@ const processLayer = async (zip: JSZip, layer: Layer) => {
       await processLayer(zip, layer.children[i]);
     }
   } else if (layer.image_path) {
+    //@ts-ignore
     const imagePaths = layer.image_path.replaceAll('\\', '/').split('/');
 
     if (imagePaths.length > 3) {
@@ -110,6 +112,7 @@ const processLayer = async (zip: JSZip, layer: Layer) => {
       }
     }
 
+    //@ts-ignore
     const thumbPaths = layer.thumb_image_path?.replaceAll('\\', '/').split('/');
 
     if (thumbPaths && thumbPaths.length > 3) {

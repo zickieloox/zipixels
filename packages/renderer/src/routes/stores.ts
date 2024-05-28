@@ -236,57 +236,57 @@ const getImageUrl = async (
 	}
 };
 
-const createKonvaLayer = async (
-	layer: any,
-	zip: any,
-	files: FileList | any,
-	imageId: string,
-	groupName: string,
-	hashtagPart: boolean | string
-) => {
-	const imageUrl: any = await getImageUrl(layer, zip, files);
+// const createKonvaLayer = async (
+// 	layer: any,
+// 	zip: any,
+// 	files: FileList | any,
+// 	imageId: string,
+// 	groupName: string,
+// 	hashtagPart: boolean | string
+// ) => {
+// 	const imageUrl: any = await getImageUrl(layer, zip, files);
 
-	const imageElement: any = await createImageElementFromUrl(imageUrl);
+// 	const imageElement: any = await createImageElementFromUrl(imageUrl);
 
-	const konvaImage = new Konva.Image({
-		x: layer.x, // + (layer.translateX || 0),
-		y: layer.y, //+ (layer.translateY || 0),
-		image: imageElement,
-		width: layer.width,
-		height: layer.height,
-		name: layer.name,
-		layerHastag: hashtagPart,
-		groupName: groupName,
-		imagePath: layer?.image_path?.includes('https://') ? layer.image_path : layer.raw_image_path,
-		svgPath: layer?.svg_path,
-		scaleX: layer.scaleX || null,
-		skewY: layer.skewY || null,
-		skewX: layer.skewX || null,
-		scaleY: layer.scaleY || null
-	});
+// 	const konvaImage = new Konva.Image({
+// 		x: layer.x, // + (layer.translateX || 0),
+// 		y: layer.y, //+ (layer.translateY || 0),
+// 		image: imageElement,
+// 		width: layer.width,
+// 		height: layer.height,
+// 		name: layer.name,
+// 		layerHastag: hashtagPart,
+// 		groupName: groupName,
+// 		imagePath: layer?.image_path?.includes('https://') ? layer.image_path : layer.raw_image_path,
+// 		svgPath: layer?.svg_path,
+// 		scaleX: layer.scaleX || null,
+// 		skewY: layer.skewY || null,
+// 		skewX: layer.skewX || null,
+// 		scaleY: layer.scaleY || null
+// 	});
 
-	// if (layer.rotate) {
-	//   konvaImage.rotate(layer.rotate);
-	// }
+// 	// if (layer.rotate) {
+// 	//   konvaImage.rotate(layer.rotate);
+// 	// }
 
-	konvaImage.id(imageId);
+// 	konvaImage.id(imageId);
 
-	imageElement?.remove();
+// 	imageElement?.remove();
 
-	if (layer.name.startsWith('#')) {
-		konvaImage.addEventListener('click', async () => {
-			document.querySelector('#' + imageId)!.click();
-		});
-	}
+// 	if (layer.name.startsWith('#')) {
+// 		konvaImage.addEventListener('click', async () => {
+// 			document.querySelector('#' + imageId)!.click();
+// 		});
+// 	}
 
-	konvaLayer!.add(konvaImage);
+// 	konvaLayer!.add(konvaImage);
 
-	if (layerZIndexMap[String(layer.z_index)]) {
-		layerZIndexMap[String(layer.z_index)].push(imageId);
-	} else {
-		layerZIndexMap[String(layer.z_index)] = [imageId];
-	}
-};
+// 	if (layerZIndexMap[String(layer.z_index)]) {
+// 		layerZIndexMap[String(layer.z_index)].push(imageId);
+// 	} else {
+// 		layerZIndexMap[String(layer.z_index)] = [imageId];
+// 	}
+// };
 
 const createCopyLayer = async (layer: any) => {
 	const base = layer.children.find((child: any) => child.name.toLowerCase().includes('base'));
@@ -304,7 +304,7 @@ export const fontStore = writable({
 	createKonvaText,
 	createKonvaTextPath,
 	createCopyLayer,
-	createKonvaLayer,
+	// createKonvaLayer,
 	setKonvaLayer: (layer: Konva.Layer) => {
 		konvaLayer = layer;
 	}
